@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en" data-palette="#2a78d6,#e34948">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compared to What? — Defining quality for AI-enhanced search</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7;
+    --surface: #fcfcfb;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --ink-muted: #898781;
+    --rule: #e1e0d9;
+    --baseline: #c3c2b7;
+    --pos: #2a78d6;
+    --neg: #e34948;
+    --ser2: #eb6834;
+    --ser3: #1baf7a;
+    --accent: #184f95;
+    --fill-warn: rgba(250,178,25,0.12);
+    --edge-warn: #b57d05;
+    --border: rgba(11,11,11,0.10);
+    --shadow: 0 1px 2px rgba(11,11,11,0.04), 0 8px 24px rgba(11,11,11,0.04);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d;
+      --surface: #1a1a19;
+      --ink: #ffffff;
+      --ink-2: #c3c2b7;
+      --ink-muted: #898781;
+      --rule: #2c2c2a;
+      --baseline: #383835;
+      --pos: #3987e5;
+      --neg: #e66767;
+      --ser2: #d95926;
+      --ser3: #199e70;
+      --accent: #86b6ef;
+      --fill-warn: rgba(250,178,25,0.10);
+      --edge-warn: #fab219;
+      --border: rgba(255,255,255,0.10);
+      --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d;
+    --surface: #1a1a19;
+    --ink: #ffffff;
+    --ink-2: #c3c2b7;
+    --ink-muted: #898781;
+    --rule: #2c2c2a;
+    --baseline: #383835;
+    --pos: #3987e5;
+    --neg: #e66767;
+    --ser2: #d95926;
+    --ser3: #199e70;
+    --accent: #86b6ef;
+    --fill-warn: rgba(250,178,25,0.10);
+    --edge-warn: #fab219;
+    --border: rgba(255,255,255,0.10);
+    --shadow: none;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 44rem; margin: 0 auto; padding: 4rem 1.5rem 7rem; }
+
+  .toggle {
+    position: fixed; top: 1rem; right: 1rem; z-index: 10;
+    background: var(--surface); color: var(--ink-2);
+    border: 1px solid var(--border); border-radius: 999px;
+    padding: 0.4rem 0.85rem; font: inherit; font-size: 0.8rem;
+    cursor: pointer; box-shadow: var(--shadow);
+  }
+  .toggle:hover { color: var(--ink); }
+
+  header { margin-bottom: 3.5rem; }
+  .eyebrow {
+    font-size: 0.75rem; letter-spacing: 0.09em; text-transform: uppercase;
+    color: var(--ink-muted); margin-bottom: 1.1rem;
+  }
+  h1 {
+    font-size: clamp(2.1rem, 5.5vw, 3rem); line-height: 1.1;
+    letter-spacing: -0.022em; margin: 0 0 0.9rem; font-weight: 600;
+  }
+  .standfirst {
+    font-size: 1.2rem; line-height: 1.5; color: var(--ink-2);
+    margin: 0 0 1.75rem; letter-spacing: -0.005em;
+  }
+  .byline {
+    font-size: 0.85rem; color: var(--ink-muted);
+    padding-top: 1.25rem; border-top: 1px solid var(--rule);
+  }
+
+  h2 {
+    font-size: 1.32rem; font-weight: 600; letter-spacing: -0.012em;
+    margin: 3.5rem 0 1rem; line-height: 1.3;
+  }
+  h2 .num {
+    display: block; font-size: 0.72rem; font-weight: 500; letter-spacing: 0.1em;
+    color: var(--ink-muted); margin-bottom: 0.45rem; font-variant-numeric: tabular-nums;
+  }
+  h3 {
+    font-size: 1rem; font-weight: 600; margin: 2rem 0 0.6rem;
+    letter-spacing: -0.005em;
+  }
+  p { margin: 0 0 1.15rem; }
+  strong { font-weight: 600; }
+  em { font-style: italic; }
+
+  ul, ol { margin: 0 0 1.15rem; padding-left: 1.4rem; }
+  li { margin-bottom: 0.6rem; }
+  li::marker { color: var(--ink-muted); }
+
+  .lede-list { list-style: none; padding-left: 0; counter-reset: c; }
+  .lede-list > li {
+    counter-increment: c; position: relative; padding-left: 2.4rem;
+    margin-bottom: 1rem;
+  }
+  .lede-list > li::before {
+    content: counter(c); position: absolute; left: 0; top: 0.1rem;
+    width: 1.6rem; height: 1.6rem; border-radius: 50%;
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--ink-2); font-size: 0.78rem; font-weight: 600;
+    display: grid; place-items: center; font-variant-numeric: tabular-nums;
+  }
+
+  .callout {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 4px;
+    padding: 1.15rem 1.35rem; margin: 1.75rem 0;
+    box-shadow: var(--shadow);
+  }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout .label {
+    font-size: 0.7rem; letter-spacing: 0.09em; text-transform: uppercase;
+    color: var(--ink-muted); margin-bottom: 0.5rem;
+  }
+
+  .notn {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; padding: 1.15rem 1.35rem; margin: 1.75rem 0;
+    box-shadow: var(--shadow); font-size: 0.95rem; line-height: 1.6;
+  }
+  .notn .label {
+    font-size: 0.7rem; letter-spacing: 0.09em; text-transform: uppercase;
+    color: var(--ink-muted); margin-bottom: 0.55rem;
+  }
+  .notn p:last-child { margin-bottom: 0; }
+  .m { font-family: Georgia, "Times New Roman", serif; font-style: italic; white-space: nowrap; }
+  .eq {
+    text-align: center; margin: 1.1rem 0; font-size: 1.05rem;
+    font-family: Georgia, "Times New Roman", serif; font-style: normal;
+  }
+  .eq i { font-style: italic; }
+  .eq .under {
+    display: block; font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.75rem; color: var(--ink-muted); margin-top: 0.45rem;
+  }
+
+  .fill {
+    display: inline; background: var(--fill-warn);
+    border: 1px dashed var(--edge-warn); border-radius: 3px;
+    padding: 0.05em 0.35em; margin: 0 0.05em;
+    font-size: 0.87em; color: var(--ink-2);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  .fill::before { content: "FILL "; color: var(--edge-warn); font-weight: 600; letter-spacing: 0.04em; }
+
+  figure { margin: 2.5rem 0; }
+  .figbox {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; padding: 1.25rem 1rem 1rem; box-shadow: var(--shadow);
+  }
+  figcaption {
+    font-size: 0.82rem; color: var(--ink-muted); margin-top: 0.85rem;
+    line-height: 1.5;
+  }
+  svg { display: block; width: 100%; height: auto; }
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 0.35rem 1.15rem;
+    margin: 0.9rem 0 0; padding: 0 0.25rem;
+    font-size: 0.78rem; color: var(--ink-2);
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 0.45rem; }
+  .swatch { width: 11px; height: 11px; border-radius: 2px; flex: none; }
+
+  table {
+    width: 100%; border-collapse: collapse; margin: 1.5rem 0;
+    font-size: 0.92rem;
+  }
+  th, td {
+    text-align: left; padding: 0.7rem 0.75rem;
+    border-bottom: 1px solid var(--rule); vertical-align: top;
+  }
+  th {
+    font-size: 0.72rem; letter-spacing: 0.07em; text-transform: uppercase;
+    color: var(--ink-muted); font-weight: 600;
+    border-bottom: 1px solid var(--baseline);
+  }
+  td:first-child { font-weight: 600; }
+
+  hr {
+    border: 0; border-top: 1px solid var(--rule);
+    margin: 3.5rem 0;
+  }
+  footer {
+    margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--rule);
+    font-size: 0.85rem; color: var(--ink-muted);
+  }
+  @media (max-width: 34rem) {
+    body { font-size: 16px; }
+    .wrap { padding: 3rem 1.15rem 5rem; }
+    table { font-size: 0.82rem; }
+    th, td { padding: 0.55rem 0.45rem; }
+  }
+</style>
+</head>
+<body>
+<button class="toggle" id="t">Dark</button>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Problem framing</div>
+  <h1>Compared to what?</h1>
+  <p class="standfirst">Defining quality for AI-enhanced search — and the case for starting to learn our routing now.</p>
+  <div class="byline"><span class="fill">author, team, date</span></div>
+</header>
+
+<p>Our search product has two paths. A shopper's query is either served by a traditional retrieval experience — fast, cheap, familiar — or routed to a generative path that returns enhanced results alongside a natural-language summary, at meaningfully higher latency and cost. Which path a query takes is decided by an allowlist, constructed heuristically and deliberately kept narrow.</p>
+
+<p>That design has served us well as a way to ship safely. It has not given us a way to answer the two questions that now matter most: <strong>is the enhanced experience good, and are we routing to it correctly?</strong> This document argues that we cannot answer the second question with the data we currently collect, that the first question is meaningless until we say what we are comparing against, and that we should start buying routing data now — not instead of improving the experience, but because without it we cannot honestly measure whether the experience is improving.</p>
+
+<h2><span class="num">The argument in brief</span>Five claims</h2>
+
+<ol class="lede-list">
+  <li><strong>Quality is not a property of the enhanced experience in isolation.</strong> It is a comparison, and the thing being compared against has to be named explicitly every time a quality claim is made.</li>
+  <li><strong>Because we are ultimately judged by A/B tests, quality should be defined as what an A/B test measures:</strong> the difference between what a shopper did when routed to the enhanced experience and what that same shopper would have done had they not been — net of the cost and latency the enhanced path imposes.</li>
+  <li><strong>Our current data cannot support that definition.</strong> Comparing allowlisted queries served enhanced results against other queries served traditional results confounds the effect of the experience with the selection of the allowlist. And for queries off the allowlist the problem is worse than bias: we have no relevant observations at all, so no amount of statistical adjustment recovers the answer.</li>
+  <li><strong>There are exactly two ways to improve the product</strong> — change which queries get routed, or change what the enhanced experience does when they arrive. These interact in both directions, and the interaction is the reason to sequence them deliberately rather than pursue them independently.</li>
+  <li><strong>The two axes can and should move in parallel — but exploration cannot wait.</strong> The routing gap is large, cheap to close, and the only improvement that can raise outcomes while <em>lowering</em> cost. More importantly, the exploration data it requires is the same data that makes experience improvements measurable outside today's narrow allowlist. Deferring it taxes both axes at once.</li>
+</ol>
+
+<hr>
+
+<h2><span class="num">Part one</span>A feature is only as good as its relevant alternative</h2>
+
+<p>There is no absolute standard against which a generative overview is good or bad. An overview can be accurate, fluent, well-cited, and beautifully rendered, and still be worthless — if the traditional retrieval path would have put the same shopper in front of the same product just as reliably, at a fraction of the cost and a fraction of the latency. Conversely, a mediocre overview that rescues an ambiguous query the retrieval path fumbles badly is genuinely valuable, however unimpressive it looks in isolation.</p>
+
+<p>This is not a pedantic point about measurement hygiene. It determines what we build. A team that evaluates the enhanced experience on its own terms will invest in making overviews more impressive. A team that evaluates it against the relevant alternative will invest in the queries where the alternative fails. Those are different roadmaps.</p>
+
+<h3>Three baselines, three different questions</h3>
+
+<p>"The relevant alternative" is not one thing. At least three baselines are live for us, and each answers a different question:</p>
+
+<table>
+  <thead>
+    <tr><th>Baseline</th><th>The question it answers</th><th>Who needs the answer</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Our own traditional path, with enhanced routing switched off</td>
+      <td>Does our AI enhancement add value over the search we would otherwise have shipped?</td>
+      <td>Product and roadmap decisions — where to invest, what to route</td>
+    </tr>
+    <tr>
+      <td>A competing search vendor</td>
+      <td>Would a retailer be better off with them than with us?</td>
+      <td>Competitive positioning and displacement</td>
+    </tr>
+    <tr>
+      <td>The retailer's incumbent search</td>
+      <td>Should this retailer buy anything at all?</td>
+      <td>The actual purchase decision for a new customer</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The team is currently focused on the first, and that is the right place to start: it is the baseline we control, the one we can randomize against, and the one that governs internal decisions about routing and investment. But it is worth being explicit that a result which looks flat against our own traditional path does not imply a flat result commercially. The incumbent search a prospective retailer is running today is frequently the weakest of the three baselines, and the enhancement may clear it comfortably while barely clearing our own. Conflating these produces confused conversations in which two people are both right about different questions.</p>
+
+<div class="callout">
+  <div class="label">Working discipline</div>
+  <p>Every quality claim names its baseline. "The enhanced experience improves engagement" is not a claim; "the enhanced experience improves engagement relative to our traditional path, on these queries, for these shoppers" is. Claims without a stated baseline should be treated as incomplete rather than debated.</p>
+</div>
+
+<h3>The A/B test is not just how we are graded — it defines the quantity</h3>
+
+<p>We are evaluated by A/B tests, and this is more consequential than it appears. It means the quantity we care about is already specified for us: an A/B test measures the difference in outcomes between shoppers who received a treatment and otherwise-identical shoppers who did not. Any definition of quality that cannot be expressed as that kind of contrast is a definition we cannot be held to, and — more importantly — cannot act on. If our internal notion of "good" is not the thing the A/B test will register, we will be repeatedly surprised by our own launches. The definition in Part Two is built to add up to exactly what the test measures.</p>
+
+<hr>
+
+<h2><span class="num">Part two</span>A definition of quality</h2>
+
+<p>The definition has two levels, and separating them is what makes the rest of the argument tractable. A small amount of notation makes both levels precise and is reused throughout; nothing beyond it will be needed.</p>
+
+<h3>Per query: incremental effect</h3>
+
+<p>For a given query in a given context — the shopper, the session, the catalog, the device — the enhanced experience <strong>performs well when it produces better outcomes for that query than the traditional path would have produced for that same query and that same shopper</strong>, net of the latency and cost it imposes.</p>
+
+<div class="notn">
+  <div class="label">Setup</div>
+  <p>Let <span class="m">x</span> be a query together with its context — shopper, session, catalog, device. For each <span class="m">x</span> there are two outcomes we could observe: <span class="m">Y</span>(1) if it is served enhanced, <span class="m">Y</span>(0) if it is served traditional — measured at the session or visitor level (see the metric discussion below). Any given impression shows us one; the other is the counterfactual. Per-query quality is the expected difference between them, net of serving cost:</p>
+  <div class="eq"><i>τ</i>(<i>x</i>)&nbsp;=&nbsp;E[ <i>Y</i>(1) − <i>Y</i>(0) | <i>x</i> ]&nbsp;−&nbsp;<i>c</i>(<i>x</i>)</div>
+  <p>where <span class="m">c</span>(<span class="m">x</span>) is the incremental cost of serving <span class="m">x</span> on the enhanced path, priced in the same units as <span class="m">Y</span>. Latency does <em>not</em> appear in <span class="m">c</span>(<span class="m">x</span>): it enters through <span class="m">Y</span>(1) itself, because <span class="m">Y</span>(1) is the outcome under the enhanced experience as actually delivered, delay included.</p>
+</div>
+
+<p>Three things follow from stating it this way. First, quality is <em>conditional</em>: <span class="m">τ</span> varies across queries, and no single aggregate summarizes it without reference to which queries it is aggregated over. Second, it can be <em>negative</em> — there are certainly regions of <span class="m">x</span> where the enhanced path makes things worse, and a definition that cannot express this is not useful for routing. Third, latency belongs <em>inside</em> the effect, not beside it as a budget line. Slower results depress engagement independently of how good they are, so a summary that is more useful but arrives noticeably later can have <span class="m">τ</span>(<span class="m">x</span>) &lt; 0. Treating latency only as a cost constraint hides this; folding it into <span class="m">Y</span>(1) surfaces it.</p>
+
+<h3>Across the product: captured value</h3>
+
+<p>The product as a whole performs well when the routing policy sends traffic to the enhanced path wherever the incremental effect is positive and large enough to justify the cost, and withholds it everywhere else — within whatever cost and latency budget we are willing to spend.</p>
+
+<div class="notn">
+  <div class="label">Policies and their value</div>
+  <p>A <strong>routing policy</strong> <span class="m">π</span> assigns each query a probability of going to the enhanced path; today's allowlist is the policy that assigns 1 on the list and 0 off it. Relative to never routing, the value of a policy is</p>
+  <div class="eq"><i>V</i>(<i>π</i>)&nbsp;=&nbsp;E[ <i>π</i>(<i>x</i>) <i>τ</i>(<i>x</i>) ]<span class="under">the per-query effect, summed over the queries the policy routes, weighted by traffic</span></div>
+  <p>The product-level object to manage is the gap between <span class="m">V</span> under today's policy and <span class="m">V</span> under the best policy we could feasibly run within the cost and latency budget. That gap — not any single metric — is the value currently left on the table.</p>
+</div>
+
+<p>This decomposition earns its keep by separating two failures that are constantly conflated in discussion: <em>the enhanced experience is weak on this query</em> and <em>we routed this query to the enhanced experience when it was never going to help</em>. These have completely different fixes, and a single aggregate quality number cannot distinguish them.</p>
+
+<h3>What to measure, and the trap in the obvious answer</h3>
+
+<p>Click-through rate is the natural first instinct and a poor primary metric for this product specifically. If a natural-language summary actually answers the shopper's question, the shopper may click less while being better served — the well-documented "good abandonment" problem in search. A genuinely better experience can move CTR in the wrong direction. CTR is a useful diagnostic and a dangerous north star.</p>
+
+<p>Relatedly, metrics have to be measured at the level where substitution can happen. A shopper who gets a good overview may issue fewer queries in the session. At the query level that looks like reduced engagement; at the session level it looks like a shopper who found what they wanted faster. Only the second reading is correct, and only session- or visitor-level measurement can see it.</p>
+
+<table>
+  <thead>
+    <tr><th>Tier</th><th>Role</th><th>Candidates</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>North star</td><td>The thing we are trying to move; defined per session or per visitor</td><td><span class="fill">the specific commercial outcome and its exact definition — e.g. conversion rate per search session, revenue per searching visitor</span></td></tr>
+    <tr><td>Failure proxies</td><td>Detect search failing the shopper, more reliably than CTR</td><td>Query reformulation rate, search abandonment without engagement, zero- and low-result rates</td></tr>
+    <tr><td>Guardrails</td><td>Must not degrade; can halt a test</td><td>Latency percentiles (not means), cost per query, fallback and error rates, <span class="fill">any additional guardrails the team already holds</span></td></tr>
+    <tr><td>Diagnostics</td><td>Explain <em>why</em> a result moved; never the decision criterion</td><td>CTR, add-to-cart rate, result-set depth reached, engagement with the overview itself</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2><span class="num">Part three</span>Why our current comparison cannot support that definition</h2>
+
+<p>The comparison most readily available to us is some version of: take the allowlisted queries that received enhanced results, take the queries that did not, and compare their outcomes. That number is the true effect on the allowlisted queries <em>plus</em> whatever baseline difference exists between the traffic on and off the allowlist — and the second piece is zero only if the allowlist were a random draw from traffic, which it deliberately is not. So the comparison mixes the thing we want with a term of unknown size; and even the first piece only describes the allowlist, saying nothing about <span class="m">τ</span>(<span class="m">x</span>) anywhere else.</p>
+
+<p>This failure has three distinct sources. They are worth separating, because they call for different remedies and only one of them is fatal.</p>
+
+<h3>1. Composition</h3>
+
+<p>Allowlisted and non-allowlisted queries are not the same kind of query, and are not issued by the same kind of shopper. They differ in intent, specificity, commercial value, position in the head or tail of the distribution, and where the shopper is in their journey. Consider a long, comparison-shaped natural-language query about which product suits a particular need, against an exact product-and-model lookup. The first is typically issued by someone early in a research process; the second by someone close to buying. Their click and conversion rates differ enormously regardless of what we show either of them. A comparison across these two groups measures the difference between a researcher and a buyer, not the difference between two search experiences.</p>
+
+<p>This is the most familiar problem and the most tractable — in principle it can be partially addressed by adjusting for observable query and shopper characteristics, to the extent we have measured the right ones.</p>
+
+<h3>2. Selection on the outcome</h3>
+
+<p>The allowlist was constructed heuristically, with the explicit intent of picking queries where the enhancement was expected to help. This means the treated set is selected on precisely the quantity we are trying to measure. Whatever judgment went into building the list — pattern recognition, intuition about which queries the retrieval path handles badly, caution about queries where a wrong summary would be embarrassing — is largely unrecorded, and therefore cannot be adjusted for. Adjustment can only correct for things we wrote down.</p>
+
+<p>The direction of the resulting error is predictable but its magnitude is not, which is the worst combination: we know the naive comparison flatters the enhanced experience, and we cannot say by how much.</p>
+
+<h3>3. No overlap — the fatal one</h3>
+
+<p>Write <span class="m">e</span>(<span class="m">x</span>) for the probability that a query like <span class="m">x</span> gets the enhanced path. Estimating <span class="m">τ</span>(<span class="m">x</span>) from data requires that both paths are actually observed for queries like <span class="m">x</span> — that <span class="m">e</span>(<span class="m">x</span>) is strictly between 0 and 1. Under the current policy, <span class="m">e</span>(<span class="m">x</span>) = 0 for every query off the allowlist. Not small: zero. There are no observations of the enhanced path on those queries, and there never will be under the current policy.</p>
+
+<p>This is categorically different from the first two problems. Composition and selection are biases — they distort an estimate we can in principle correct. Zero overlap is not a bias; it is missing data by construction. No statistical method — matching, adjustment, weighting, anything — recovers a counterfactual in a region where nothing was ever treated, because there is no information there to recover it from. The only remedy is to deliberately create variation where none exists.</p>
+
+<div class="callout">
+  <div class="label">The consequence</div>
+  <p>Our current setup can tell us how the enhanced experience performs on the narrow slice of queries we already believed in. It cannot tell us whether that slice is the <em>right</em> slice, how much value sits outside it, or where the boundary should be. The single most important question about routing is precisely the question our data is structurally unable to answer.</p>
+</div>
+
+<figure>
+  <div class="figbox">
+    <svg viewBox="0 0 680 302" role="img" aria-labelledby="figtitle figdesc">
+      <title id="figtitle">Schematic: incremental effect across queries versus what we currently route</title>
+      <desc id="figdesc">A declining dashed curve represents queries ordered by their incremental effect, crossing zero partway across. The positive area is shaded blue, the negative area red. A strip below shows currently-routed queries clustered narrowly on the left, leaving much of the positive region unrouted while including a few queries in the negative region.</desc>
+
+      <!-- positive area -->
+      <path d="M70,52 C170,64 260,96 390,130 L70,130 Z" fill="var(--pos)" opacity="0.13"/>
+      <!-- negative area -->
+      <path d="M390,130 C490,164 560,182 630,193 L630,130 Z" fill="var(--neg)" opacity="0.13"/>
+
+      <!-- zero line -->
+      <line x1="70" y1="130" x2="630" y2="130" stroke="var(--baseline)" stroke-width="1"/>
+      <text x="62" y="134" text-anchor="end" font-size="10.5" fill="var(--ink-muted)">0</text>
+
+      <!-- the curve, dashed to signal it is unobserved -->
+      <path d="M70,52 C170,64 260,96 390,130 C490,164 560,182 630,193"
+            fill="none" stroke="var(--ink-2)" stroke-width="2" stroke-dasharray="5 4" stroke-linecap="round"/>
+
+      <!-- efficient boundary -->
+      <line x1="390" y1="38" x2="390" y2="278" stroke="var(--ink-muted)" stroke-width="1" stroke-dasharray="2 3"/>
+      <text x="397" y="50" font-size="10.5" fill="var(--ink-2)">efficient boundary —</text>
+      <text x="397" y="63" font-size="10.5" fill="var(--ink-2)">location unknown today</text>
+
+      <!-- annotation: forgone value -->
+      <text x="150" y="168" font-size="10.5" fill="var(--ink-2)">positive effect, not routed</text>
+      <text x="150" y="182" font-size="10.5" fill="var(--ink-muted)">value forgone</text>
+      <path d="M320,162 L320,128" stroke="var(--ink-muted)" stroke-width="1"/>
+      <path d="M316,134 L320,127 L324,134" fill="none" stroke="var(--ink-muted)" stroke-width="1"/>
+
+      <!-- annotation: negative spend -->
+      <text x="412" y="216" font-size="10.5" fill="var(--ink-2)">we route some of these anyway</text>
+      <text x="412" y="230" font-size="10.5" fill="var(--ink-muted)">spend that does not pay for itself</text>
+      <path d="M470,238 L470,251" stroke="var(--ink-muted)" stroke-width="1"/>
+      <path d="M466,245 L470,252 L474,245" fill="none" stroke="var(--ink-muted)" stroke-width="1"/>
+
+      <!-- routed strip -->
+      <text x="70" y="248" font-size="10.5" fill="var(--ink-2)">Routed to the enhanced path today</text>
+      <g stroke="var(--pos)" stroke-width="3" stroke-linecap="round">
+        <line x1="76" y1="258" x2="76" y2="274"/>
+        <line x1="85" y1="258" x2="85" y2="274"/>
+        <line x1="94" y1="258" x2="94" y2="274"/>
+        <line x1="104" y1="258" x2="104" y2="274"/>
+        <line x1="113" y1="258" x2="113" y2="274"/>
+        <line x1="123" y1="258" x2="123" y2="274"/>
+        <line x1="135" y1="258" x2="135" y2="274"/>
+        <line x1="146" y1="258" x2="146" y2="274"/>
+        <line x1="159" y1="258" x2="159" y2="274"/>
+        <line x1="173" y1="258" x2="173" y2="274"/>
+        <line x1="188" y1="258" x2="188" y2="274"/>
+        <line x1="206" y1="258" x2="206" y2="274"/>
+        <line x1="228" y1="258" x2="228" y2="274"/>
+        <line x1="262" y1="258" x2="262" y2="274"/>
+        <line x1="310" y1="258" x2="310" y2="274"/>
+        <line x1="358" y1="258" x2="358" y2="274"/>
+      </g>
+      <g stroke="var(--neg)" stroke-width="3" stroke-linecap="round">
+        <line x1="428" y1="258" x2="428" y2="274"/>
+        <line x1="496" y1="258" x2="496" y2="274"/>
+        <line x1="584" y1="258" x2="584" y2="274"/>
+      </g>
+
+      <!-- axis labels -->
+      <text x="70" y="294" font-size="10.5" fill="var(--ink-muted)">queries, ordered by incremental effect →</text>
+      <text x="22" y="115" font-size="10.5" fill="var(--ink-muted)" transform="rotate(-90 22 115)" text-anchor="middle">incremental effect, net of cost</text>
+    </svg>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--pos)"></i>positive incremental effect</span>
+      <span><i class="swatch" style="background:var(--neg)"></i>negative incremental effect</span>
+      <span><i class="swatch" style="background:var(--ink-2)"></i>effect curve (unobserved)</span>
+    </div>
+  </div>
+  <figcaption><strong>Schematic — illustrative shape, not measured data.</strong> The curve is drawn dashed because we have never observed it. A restrictive heuristic policy is very unlikely to sit at the efficient boundary, and can err in both directions at once: excluding queries that would benefit, while including some that do not. Today we cannot measure either error, because outside the allowlist there is nothing to measure.</figcaption>
+</figure>
+
+<hr>
+
+<h2><span class="num">Part four</span>Two axes, and how they interact</h2>
+
+<p>Given the definition above, there are exactly two ways to increase captured value.</p>
+
+<p><strong>Axis A — routing.</strong> Holding the enhanced experience fixed, move queries with positive incremental effect onto the enhanced path and queries with negative incremental effect off it.</p>
+
+<p><strong>Axis B — the experience.</strong> Holding routing fixed, raise the incremental effect itself: a better natural-language overview, better personalization of the result set, lower latency, better handling of the cases where the generative path currently fails.</p>
+
+<p>They are not independent, and the dependency runs both ways.</p>
+
+<p><strong>Improving the experience moves the routing boundary.</strong> Every material improvement on axis B shifts some queries from negative to positive incremental effect. A routing policy learned before an experience change is partly stale after it. This means routing is not a one-time calibration exercise; it is a standing estimation problem against a surface that we ourselves keep moving. That has an important implication: the exploration needed to learn routing is not a project with an end date, it is infrastructure.</p>
+
+<p><strong>Routing exploration is what makes experience improvements measurable.</strong> Today, any change to the enhanced experience can only be evaluated on the allowlist — a narrow, favorably selected slice of traffic that is unrepresentative of where we would eventually want the experience to work. We are tuning the experience on the easy cases and learning nothing about the hard ones. Worse, we may be optimizing for the queries that were selected <em>because</em> the experience already handled them well.</p>
+
+<hr>
+
+<h2><span class="num">Part five</span>Why exploration cannot wait</h2>
+
+<p>To be clear about what is <em>not</em> being argued: the two axes do not compete for the same people or the same slot, and there is no reason to pause experience work while routing gets sorted out. Both can move in parallel, and should. The prioritization claim is narrower — among everything we could start this quarter, the exploration infrastructure is the piece that cannot be deferred without cost to everything else:</p>
+
+<ol>
+  <li><strong>The expected routing gap is large.</strong> The current policy is heuristic and deliberately restrictive. A restrictive heuristic is very unlikely to sit near the efficient boundary, and both directions of error are probably present simultaneously — queries excluded that would benefit, and queries included that do not pay for themselves.</li>
+  <li><strong>Closing it requires no new capability.</strong> It reallocates capability we have already built and paid for. No model improvement is needed to capture the gain, which makes it unusually cheap relative to its size.</li>
+  <li><strong>It is the only improvement that can raise outcomes while reducing cost.</strong> Removing negative-effect queries from the expensive path saves money <em>and</em> improves the shopper experience. Every improvement on axis B costs something.</li>
+  <li><strong>It is upstream of honest measurement on the other axis.</strong> Until exploration exists, every improvement to the enhanced experience is evaluated only on the allowlist — a narrow, favorably selected slice. Axis B work done in parallel is fine; axis B work <em>measured</em> only on today's allowlist is running blind on the traffic that matters most.</li>
+</ol>
+
+<p>The fourth reason is the strongest, and the one most likely to be overlooked when this is discussed as a straight prioritization question. Exploration is not a competitor to experience work; it is the instrument that tells us whether experience work is succeeding. That is why the sequencing question is really a lead-time question: the sooner the variation exists, the sooner everything else becomes measurable.</p>
+
+<hr>
+
+<h2><span class="num">Part six</span>The proposal: buy the information</h2>
+
+<p>Expand the allowlist to include a large <strong>uncertainty set</strong> — queries we cannot confidently classify as good or bad candidates — and give each of them a small probability of being routed to the enhanced path within the experiment. Several things follow.</p>
+
+<h3>Overlap is restored</h3>
+
+<p>Giving every query in the uncertainty set a small routing probability <span class="m">ε</span> &gt; 0 means every such query now has both treated and untreated observations. <span class="m">τ</span>(<span class="m">x</span>) becomes something we estimate rather than assume. This is the whole point: it converts a question that is structurally unanswerable into an ordinary measurement problem.</p>
+
+<h3>The cost is bounded, known in advance, and small</h3>
+
+<p>Aggregate exploration cost is roughly (traffic volume of the uncertainty set) × <span class="m">ε</span> × (average incremental cost per enhanced query). Every term is known before launch, and <span class="m">ε</span> is a dial we set. Because the uncertainty set is large, a <em>small</em> <span class="m">ε</span> still yields a substantial number of treated observations — and broad coverage at low probability is strictly better for learning a boundary than narrow coverage at high probability.</p>
+
+<h3>Log the propensity at serve time</h3>
+
+<p>One implementation detail carries a disproportionate share of the value: <strong>record <span class="m">e</span>(<span class="m">x</span>) with every impression</strong>, whatever value it took. Logged propensities are what turn the experiment's traffic into a reusable off-policy evaluation dataset. With them, any candidate routing policy — not just the one that ran — can be scored against the logs with standard off-policy estimators, so one round of exploration prices many policies. Without them, each new candidate needs its own experiment. This is cheap to do at serve time and impossible to reconstruct afterward.</p>
+
+<div class="callout">
+  <div class="label">The framing that matters</div>
+  <p>This is a purchase of information, not a gamble with the shopper experience. The cost is bounded, known, and paid once per learning cycle. The return is a better routing policy applied to all subsequent traffic. The asymmetry is the argument: we are currently paying an unbounded and unmeasured cost — routing wrongly, indefinitely, in both directions — to avoid a bounded and measured one.</p>
+</div>
+
+<h3>Learn a policy over query representations, not query identities</h3>
+
+<p>One constraint deserves emphasis, because getting it wrong makes the project look infeasible. For tail queries we will never have the traffic to estimate a per-query effect, and per-query effects are not the goal anyway. The policy has to be learned over a <em>representation</em> of queries — embeddings together with interpretable attributes such as length, specificity, whether a brand is named, whether the query is question- or comparison-shaped, informational versus transactional intent, catalog density in the matched category, historical zero-result rate, and <span class="fill">whatever query features are already available in our stack</span>.</p>
+
+<p>A contextual bandit or off-policy learner over that representation generalizes to queries never seen before, which is the entire value proposition. Stated plainly: <strong>we are not learning which queries to route, we are learning what kinds of queries to route.</strong> That reframing is what makes the tail tractable — and it also states the method's limit honestly: the policy can only distinguish queries its features distinguish, so a poor representation caps the value of even unlimited exploration.</p>
+
+<h3>The experiment, concretely</h3>
+
+<p>The design that fits our constraints is nested — two layers of randomization doing two different jobs:</p>
+
+<ul>
+  <li><strong>Visitor layer (measurement).</strong> Visitors are split between <em>control</em> — status-quo routing, untouched — and <em>explore</em>. The graded A/B number is the session-level north star compared across this split. This layer is what keeps the number we are judged on clean: it prices the total cost of exploration directly, and it is immune to within-session spillovers because a whole visitor experiences one regime.</li>
+  <li><strong>Query layer (learning).</strong> Inside the explore arm, routing is randomized per query: <span class="m">e</span>(<span class="m">x</span>) = <span class="m">ε</span> on the uncertainty set, <span class="m">e</span>(<span class="m">x</span>) = 1 − <span class="m">δ</span> on the allowlist, 0 on the judged-bad remainder. This layer is what identifies <span class="m">τ</span> — which kinds of queries benefit.</li>
+  <li><strong>The allowlist gets a holdback too.</strong> The small <span class="m">δ</span> matters as much as <span class="m">ε</span>. With <span class="m">e</span> = 1 on the allowlist, the allowlist's own mistakes — queries routed that should not be — are permanently invisible, because there is no untreated traffic there to compare against. Learning to <em>prune</em> requires a holdback exactly as learning to <em>expand</em> requires exploration.</li>
+  <li><strong>Every explore-arm impression logs its features, its <span class="m">e</span>(<span class="m">x</span>), the realized routing, and the session outcome.</strong> That log is the asset the experiment exists to produce.</li>
+  <li><strong>The learned policy acts only where exploration gave it data.</strong> Refit on a cadence; score candidate policies against the logs off-policy before promoting them to a live slice; and constrain the policy to the region the exploration actually covered. Outside that region — including the judged-bad set — it defers to the default. A model will happily produce confident <span class="m">τ̂</span> estimates in regions it has never seen; the support rule is what stops those estimates from routing traffic.</li>
+  <li><strong>Exploration never fully turns off.</strong> A permanent small <span class="m">ε</span> floor is what detects staleness after the experience changes — the alternative is discovering staleness in the quarterly numbers.</li>
+</ul>
+
+<h3>Use the randomized data to calibrate autoraters</h3>
+
+<p>Autoraters and randomized experiments are not competing approaches; they sit in a hierarchy, and the value comes from connecting them.</p>
+
+<table>
+  <thead>
+    <tr><th></th><th>Randomized outcome data</th><th>Autoraters</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Cost</td><td>Expensive, slow, needs live traffic</td><td>Cheap, instant, needs no traffic</td></tr>
+    <tr><td>Coverage</td><td>Sparse; hopeless in the tail</td><td>Dense; every query, offline</td></tr>
+    <tr><td>What it measures</td><td>Actual incremental business outcome</td><td>Perceived quality of the output</td></tr>
+    <tr><td>Trustworthiness</td><td>Causally sound by construction</td><td>Only as good as its correlation with outcomes</td></tr>
+  </tbody>
+</table>
+
+<p>The right relationship is therefore: <strong>randomized experiments are the anchor; autoraters are the extrapolation.</strong> Use the exploration data to check whether autorater scores actually predict incremental outcomes, and specifically where they do and do not. Then use validated autoraters to extend quality judgments into the long tail where experiments will never have power, and to catch regressions before they reach traffic.</p>
+
+<p>The failure mode to guard against is adopting autoraters as ground truth without ever checking them against outcomes. An autorater that rewards fluent, confident, well-structured overviews will optimize for fluent, confident, well-structured overviews — very efficiently, and regardless of whether that is what makes a shopper buy. The correlation has to be measured, reported, and re-checked after any material change to the experience, because a change on axis B can break a calibration that previously held.</p>
+
+<hr>
+
+<h2><span class="num">Part seven</span>A dry run in a toy world</h2>
+
+<p>Every claim so far is a claim about logic, so it can be checked in a world where the truth is known. We built one: a simulated search product with 1.5M sessions a week, a ~4.6% baseline conversion rate, and a true per-query effect that ranges from −3.4 to +2.2 points of conversion and is positive for about 27% of traffic. The allowlist is the top 5% of a heuristic score that correlates with the true effect, with baseline conversion, <em>and</em> with noise — that is, it was built the way real allowlists are built. Serving cost is 0.2 points per enhanced query. Nothing about this world is calibrated to our product; the parameters are invented and only the <em>shapes</em> of the results carry over. All numbers below are medians over 24 replications.</p>
+
+<p>First, the measurement claim from Part Three. In the status-quo world we ran the naive comparison — allowlisted traffic against everything else:</p>
+
+<figure>
+  <div class="figbox">
+    <svg viewBox="0 0 680 178" role="img" aria-labelledby="fa-t fa-d">
+      <title id="fa-t">Naive comparison versus true effect in the simulation</title>
+      <desc id="fa-d">The naive contrast between allowlisted and other traffic reports plus 7.4 percentage points of conversion. The true effect of the enhancement on those same queries is plus 2.0 points. The remaining 5.4 points are composition and selection.</desc>
+      <line x1="70" y1="26" x2="70" y2="140" stroke="var(--baseline)" stroke-width="1"/>
+      <text x="70" y="20" font-size="10.5" fill="var(--ink-2)">What the status-quo logs report — allowlisted traffic vs everything else</text>
+      <path d="M70,28 h523.25 q4,0 4,4 v12 q0,4 -4,4 h-523.25 z" fill="var(--ink-muted)" opacity="0.5"><title>naive contrast: +7.4pp</title></path>
+      <text x="605" y="43" font-size="12" font-weight="600" fill="var(--ink)">+7.4pp</text>
+
+      <text x="70" y="84" font-size="10.5" fill="var(--ink-2)">What the enhancement actually did to those same queries</text>
+      <path d="M70,92 h138.5 q4,0 4,4 v12 q0,4 -4,4 h-138.5 z" fill="var(--pos)"><title>true effect on allowlisted queries: +2.0pp</title></path>
+      <text x="220" y="107" font-size="12" font-weight="600" fill="var(--ink)">+2.0pp</text>
+
+      <path d="M212.5,70 L597.25,70" stroke="var(--ink-muted)" stroke-width="1" stroke-dasharray="3 3"/>
+      <path d="M212.5,66 v8 M597.25,66 v8" stroke="var(--ink-muted)" stroke-width="1"/>
+      <text x="404" y="63" font-size="10.5" fill="var(--ink-muted)" text-anchor="middle">+5.4pp of composition and selection, not product impact</text>
+
+      <g font-size="10.5" fill="var(--ink-muted)">
+        <text x="70" y="158" text-anchor="middle">0</text>
+        <text x="212.5" y="158" text-anchor="middle">+2</text>
+        <text x="355" y="158" text-anchor="middle">+4</text>
+        <text x="497.5" y="158" text-anchor="middle">+6</text>
+        <text x="640" y="158" text-anchor="middle">+8pp</text>
+      </g>
+      <g stroke="var(--rule)" stroke-width="1">
+        <line x1="212.5" y1="136" x2="212.5" y2="142"/>
+        <line x1="355" y1="136" x2="355" y2="142"/>
+        <line x1="497.5" y1="136" x2="497.5" y2="142"/>
+        <line x1="640" y1="136" x2="640" y2="142"/>
+      </g>
+      <line x1="70" y1="140" x2="640" y2="140" stroke="var(--baseline)" stroke-width="1"/>
+    </svg>
+  </div>
+  <figcaption><strong>Simulation.</strong> The naive contrast overstates the enhancement's true effect on the very same queries by a factor of 3.7 — in a world where the enhancement genuinely works. A team reading the left number would conclude the experience is spectacular; a team reading the right one would conclude it is good. Both would still know nothing about the other 95% of traffic.</figcaption>
+</figure>
+
+<p>Second, the routing claim. The heuristic allowlist captures 89 incremental conversions per 100k sessions; the best possible policy in this world captures 326 — the status quo leaves roughly three quarters of the achievable value on the table. We then ran the proposal from Part Six for eight simulated weeks, under two designs with <em>identical exploration budgets</em>: a broad uncertainty set (85% of traffic) at <span class="m">ε</span> = 2%, and a narrow one (the 5% slice of traffic just below the allowlist cutoff — the "almost made the list" queries) at <span class="m">ε</span> = 34%. Each week, a deliberately imperfect model refits the effect estimate on the accumulated logs, and the learned policy routes where the estimate is positive, within the region its design explored:</p>
+
+<figure>
+  <div class="figbox" id="fig-lc" style="position:relative">
+    <svg viewBox="0 0 680 360" role="img" aria-labelledby="fb-t fb-d">
+      <title id="fb-t">Learning curves: value captured by week under broad versus narrow exploration</title>
+      <desc id="fb-d">The broad low-probability design climbs from 188 to 285 incremental conversions per 100k sessions over eight weeks, approaching the oracle at 326. The narrow high-probability design with the same budget plateaus near 148, just under its ceiling of 154 — the best any policy confined to that slice could do. The status quo sits at 89.</desc>
+      <g stroke="var(--rule)" stroke-width="1">
+        <line x1="70" y1="300" x2="640" y2="300"/>
+        <line x1="70" y1="223.5" x2="640" y2="223.5"/>
+        <line x1="70" y1="147.1" x2="640" y2="147.1"/>
+        <line x1="70" y1="70.6" x2="640" y2="70.6"/>
+      </g>
+      <g font-size="10.5" fill="var(--ink-muted)" text-anchor="end">
+        <text x="62" y="304">0</text>
+        <text x="62" y="227.5">100</text>
+        <text x="62" y="151.1">200</text>
+        <text x="62" y="74.6">300</text>
+      </g>
+
+      <line x1="70" y1="50.6" x2="640" y2="50.6" stroke="var(--ink-2)" stroke-width="1" stroke-dasharray="5 4"/>
+      <text x="70" y="43" font-size="10.5" fill="var(--ink-2)">oracle — route every net-positive query: 326</text>
+
+      <line x1="70" y1="232.2" x2="640" y2="232.2" stroke="var(--ink-muted)" stroke-width="1" stroke-dasharray="5 4"/>
+      <text x="70" y="248" font-size="10.5" fill="var(--ink-muted)">status-quo allowlist: 89</text>
+
+      <line x1="70" y1="182.5" x2="640" y2="182.5" stroke="var(--ser2)" stroke-width="1" stroke-dasharray="2 3"/>
+      <text x="640" y="175" font-size="10.5" fill="var(--ser2)" text-anchor="end">ceiling of the narrow slice: 154</text>
+
+      <path d="M70.0,142.6 L151.4,108.4 L232.9,93.1 L314.3,81.7 L395.7,79.3 L477.1,77.9 L558.6,74.9 L640.0,76.1 L640.0,86.0 L558.6,89.9 L477.1,90.3 L395.7,92.0 L314.3,98.3 L232.9,107.1 L151.4,133.8 L70.0,178.7 Z" fill="var(--pos)" opacity="0.13"/>
+      <path d="M70.0,197.7 L151.4,191.8 L232.9,189.2 L314.3,187.4 L395.7,186.4 L477.1,186.2 L558.6,186.1 L640.0,185.8 L640.0,187.3 L558.6,187.9 L477.1,188.4 L395.7,189.2 L314.3,191.0 L232.9,192.5 L151.4,195.5 L70.0,202.1 Z" fill="var(--ser2)" opacity="0.13"/>
+
+      <polyline points="70.0,156.2 151.4,119.0 232.9,99.1 314.3,86.8 395.7,83.9 477.1,83.0 558.6,81.5 640.0,81.8" fill="none" stroke="var(--pos)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+      <polyline points="70.0,199.8 151.4,193.3 232.9,191.6 314.3,188.7 395.7,188.1 477.1,187.1 558.6,186.9 640.0,186.5" fill="none" stroke="var(--ser2)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+
+      <text x="632" y="70" font-size="11" font-weight="600" fill="var(--pos)" text-anchor="end">285</text>
+      <text x="632" y="205" font-size="11" font-weight="600" fill="var(--ser2)" text-anchor="end">148</text>
+
+      <g font-size="10.5" fill="var(--ink-muted)" text-anchor="middle">
+        <text x="70" y="322">1</text><text x="151.4" y="322">2</text><text x="232.9" y="322">3</text><text x="314.3" y="322">4</text>
+        <text x="395.7" y="322">5</text><text x="477.1" y="322">6</text><text x="558.6" y="322">7</text><text x="640" y="322">8</text>
+      </g>
+      <text x="355" y="345" font-size="10.5" fill="var(--ink-muted)" text-anchor="middle">weeks of exploration (1.5M sessions per week)</text>
+      <text x="20" y="185" font-size="10.5" fill="var(--ink-muted)" transform="rotate(-90 20 185)" text-anchor="middle">incremental conversions per 100k sessions</text>
+
+      <line id="lc-x" x1="70" y1="40" x2="70" y2="300" stroke="var(--ink-muted)" stroke-width="1" opacity="0"/>
+      <circle id="lc-p1" r="4" fill="var(--pos)" stroke="var(--surface)" stroke-width="2" opacity="0"/>
+      <circle id="lc-p2" r="4" fill="var(--ser2)" stroke="var(--surface)" stroke-width="2" opacity="0"/>
+      <rect id="lc-hit" x="70" y="40" width="570" height="282" fill="transparent"/>
+    </svg>
+    <div id="lc-tip" style="position:absolute; display:none; pointer-events:none; background:var(--surface); border:1px solid var(--border); border-radius:5px; box-shadow:var(--shadow); padding:0.45rem 0.65rem; font-size:0.78rem; color:var(--ink-2); white-space:nowrap;"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--pos)"></i>broad set (85% of traffic), ε = 2%</span>
+      <span><i class="swatch" style="background:var(--ser2)"></i>narrow set (5% of traffic), ε = 34% — same budget</span>
+      <span><i class="swatch" style="background:var(--ink-muted); opacity:.4"></i>bands: interquartile range over 24 runs</span>
+    </div>
+  </div>
+  <figcaption><strong>Simulation.</strong> Same exploration spend, very different outcomes. The broad design captures more than 80% of the achievable headroom by week five (83% by week eight). The narrow design learns its slice quickly and completely — and that is the problem: the best <em>any</em> policy confined to that slice could capture is 154, so it converges obediently to its own ceiling. The boundary between good and bad routing cannot be found by standing on one side of it. (If the narrow-trained model is instead allowed to extrapolate outside its slice, it performs <em>worse than routing nothing at all</em> for the first month — confident estimates in regions with no data are how exploration's cost gets turned into a catastrophe.)</figcaption>
+</figure>
+
+<p>Three shapes to take away — none of the specific numbers. The naive comparison misleads by multiples even when the product works, so instinct calibrated on it is miscalibrated. A restrictive heuristic leaves most of the achievable value unclaimed, and a small, cheap <span class="m">ε</span> recovers most of it within weeks at realistic traffic volumes. And breadth beats intensity at fixed budget: coverage of the query space, not sample size within a familiar slice, is what buys the routing boundary. The simulation code is small and self-contained — <span class="fill">link to the simulation and replication packet</span> — and the same analysis is designed to be rerun with production parameters before we commit to a design.</p>
+
+<hr>
+
+<h2><span class="num">Part eight</span>The batch version: learning the allowlist from the A/B we already run</h2>
+
+<p>Everything in Part Six assumed we build per-query randomization. There is a nearer-term version that needs none of it: the standard user-level A/B — treatment arm gets allowlist routing, control arm gets plain search — already contains per-query experiments. Because users are assigned at random, arm membership is random <em>conditional on any given query</em>, so comparing outcomes for the same query across arms is a clean randomized contrast for every allowlisted query. One logging change unlocks this: <strong>evaluate the allowlist in the control arm too</strong> and record the would-have-been-routed flag, so the two arms' query populations are matched by construction rather than reconstructed afterward. Off-allowlist queries get identical experiences in both arms and remain dark — Part Three's boundary is unchanged; a model is what reaches across it.</p>
+
+<p>The obstacle is sparsity. Query traffic is Zipf-distributed: a few head queries carry real volume, and everything else is measured in dozens of sessions. In the toy world's version of this — 2,000 allowlisted queries, 150k allowlisted sessions a week, eight weeks — the <em>median</em> query accumulates 123 sessions total across both arms, and roughly <strong>1 in 200</strong> queries carries enough traffic to individually detect a +1pp effect. Per-query estimates at the tail are not noisy versions of the truth; they are essentially noise with a faint pulse of truth inside.</p>
+
+<div class="notn">
+  <div class="label">The estimator in one line</div>
+  <p>Fit a model <span class="m">f̂</span>(<span class="m">φ</span>(<span class="m">q</span>)) predicting each query's effect from its features, then blend it with the query's own measured contrast <span class="m">Δ̂</span>(<span class="m">q</span>), weighting each by how much information it carries:</p>
+  <div class="eq"><i>θ̂</i>(<i>q</i>)&nbsp;=&nbsp;<i>ω</i><sub>q</sub> <i>Δ̂</i>(<i>q</i>)&nbsp;+&nbsp;(1 − <i>ω</i><sub>q</sub>) <i>f̂</i>(<i>φ</i>(<i>q</i>))<span class="under">ω<sub>q</sub> = the share of total precision contributed by the query's own data</span></div>
+  <p>Head queries are judged mostly on their own record; tail queries are judged mostly as members of their kind; everything in between blends in proportion. This is standard partial pooling (empirical Bayes / hierarchical modeling), and it avoids both failure modes at once: trusting noise, and ignoring data. One production detail matters more than the estimator's brand: give the query-level deviations <em>heavy tails</em>, so a query with real traffic that genuinely departs from its type can out-vote the prior instead of being shrunk into invisibility.</p>
+</div>
+
+<figure>
+  <div class="figbox">
+    <svg viewBox="0 0 680 340" role="img" aria-labelledby="fc-t fc-d">
+      <title id="fc-t">Distributions of true effects, empirical-Bayes posteriors, and raw per-query estimates</title>
+      <desc id="fc-d">Three density strips on a shared axis of net effect from minus six to plus six percentage points. True effects form a tight bump within about two and a half points of zero. Empirical-Bayes posteriors form a similar, slightly wider bump. Raw per-query estimates smear across the entire axis with clipped mass beyond both edges.</desc>
+      <line x1="355" y1="40" x2="355" y2="304" stroke="var(--baseline)" stroke-width="1" stroke-dasharray="2 3"/>
+
+      <text x="70" y="52" font-size="10.5" fill="var(--ink-2)">True net effects — the thing we are trying to estimate</text>
+      <path d="M70.0,120.0 L72.4,120.0 L77.1,120.0 L81.9,120.0 L86.6,120.0 L91.4,120.0 L96.1,120.0 L100.9,120.0 L105.6,120.0 L110.4,120.0 L115.1,120.0 L119.9,120.0 L124.6,120.0 L129.4,120.0 L134.1,120.0 L138.9,120.0 L143.6,120.0 L148.4,120.0 L153.1,120.0 L157.9,120.0 L162.6,120.0 L167.4,120.0 L172.1,120.0 L176.9,120.0 L181.6,120.0 L186.4,120.0 L191.1,120.0 L195.9,120.0 L200.6,120.0 L205.4,120.0 L210.1,120.0 L214.9,120.0 L219.6,120.0 L224.4,120.0 L229.1,119.9 L233.9,119.8 L238.6,119.6 L243.4,119.3 L248.1,119.1 L252.9,118.7 L257.6,118.3 L262.4,117.7 L267.1,117.0 L271.9,116.0 L276.6,114.9 L281.4,113.7 L286.1,112.5 L290.9,111.1 L295.6,109.3 L300.4,107.3 L305.1,105.4 L309.9,103.5 L314.6,101.5 L319.4,99.7 L324.1,97.6 L328.9,95.4 L333.6,93.0 L338.4,90.7 L343.1,88.3 L347.9,85.8 L352.6,83.0 L357.4,79.8 L362.1,76.2 L366.9,72.3 L371.6,68.2 L376.4,64.2 L381.1,60.7 L385.9,57.9 L390.6,56.5 L395.4,56.0 L400.1,56.7 L404.9,58.3 L409.6,60.9 L414.4,64.3 L419.1,68.4 L423.9,73.3 L428.6,78.8 L433.4,84.5 L438.1,89.8 L442.9,94.8 L447.6,99.6 L452.4,104.1 L457.1,108.0 L461.9,111.0 L466.6,113.5 L471.4,115.4 L476.1,116.9 L480.9,118.0 L485.6,118.7 L490.4,119.2 L495.1,119.5 L499.9,119.7 L504.6,119.9 L509.4,120.0 L514.1,120.0 L518.9,120.0 L523.6,120.0 L528.4,120.0 L533.1,120.0 L537.9,120.0 L542.6,120.0 L547.4,120.0 L552.1,120.0 L556.9,120.0 L561.6,120.0 L566.4,120.0 L571.1,120.0 L575.9,120.0 L580.6,120.0 L585.4,120.0 L590.1,120.0 L594.9,120.0 L599.6,120.0 L604.4,120.0 L609.1,120.0 L613.9,120.0 L618.6,120.0 L623.4,120.0 L628.1,120.0 L632.9,120.0 L637.6,120.0 L640.0,120.0 Z" fill="var(--ink-muted)" opacity="0.35" stroke="var(--ink-2)" stroke-width="1.5"/>
+      <text x="636" y="96" font-size="10.5" fill="var(--ink-muted)" text-anchor="end">truth stays within ≈ ±2.5pp</text>
+
+      <text x="70" y="136" font-size="10.5" fill="var(--ink-2)">Empirical-Bayes posteriors — pooled across similar queries</text>
+      <path d="M70.0,204.0 L72.4,204.0 L77.1,204.0 L81.9,204.0 L86.6,204.0 L91.4,204.0 L96.1,204.0 L100.9,204.0 L105.6,204.0 L110.4,204.0 L115.1,204.0 L119.9,204.0 L124.6,204.0 L129.4,204.0 L134.1,204.0 L138.9,204.0 L143.6,204.0 L148.4,204.0 L153.1,204.0 L157.9,204.0 L162.6,204.0 L167.4,204.0 L172.1,204.0 L176.9,204.0 L181.6,204.0 L186.4,204.0 L191.1,204.0 L195.9,204.0 L200.6,204.0 L205.4,204.0 L210.1,204.0 L214.9,204.0 L219.6,204.0 L224.4,204.0 L229.1,204.0 L233.9,204.0 L238.6,203.9 L243.4,203.7 L248.1,203.6 L252.9,203.6 L257.6,203.5 L262.4,203.5 L267.1,203.4 L271.9,203.2 L276.6,202.9 L281.4,202.5 L286.1,202.1 L290.9,201.7 L295.6,201.3 L300.4,200.8 L305.1,200.1 L309.9,199.3 L314.6,198.3 L319.4,197.0 L324.1,195.4 L328.9,193.3 L333.6,190.8 L338.4,187.6 L343.1,183.7 L347.9,179.1 L352.6,173.9 L357.4,168.2 L362.1,162.1 L366.9,155.7 L371.6,149.6 L376.4,144.1 L381.1,140.9 L385.9,140.0 L390.6,142.0 L395.4,145.7 L400.1,151.2 L404.9,157.9 L409.6,165.5 L414.4,172.8 L419.1,179.5 L423.9,185.0 L428.6,189.5 L433.4,193.1 L438.1,196.0 L442.9,198.2 L447.6,199.8 L452.4,200.9 L457.1,201.8 L461.9,202.5 L466.6,203.0 L471.4,203.2 L476.1,203.5 L480.9,203.7 L485.6,203.9 L490.4,203.9 L495.1,204.0 L499.9,204.0 L504.6,204.0 L509.4,204.0 L514.1,204.0 L518.9,204.0 L523.6,204.0 L528.4,204.0 L533.1,204.0 L537.9,204.0 L542.6,204.0 L547.4,204.0 L552.1,204.0 L556.9,204.0 L561.6,204.0 L566.4,204.0 L571.1,204.0 L575.9,204.0 L580.6,204.0 L585.4,204.0 L590.1,204.0 L594.9,204.0 L599.6,204.0 L604.4,204.0 L609.1,204.0 L613.9,204.0 L618.6,204.0 L623.4,204.0 L628.1,204.0 L632.9,204.0 L637.6,204.0 L640.0,204.0 Z" fill="var(--pos)" opacity="0.16" stroke="var(--pos)" stroke-width="1.5"/>
+      <text x="636" y="180" font-size="10.5" fill="var(--ink-muted)" text-anchor="end">tail queries pulled toward their type's estimate</text>
+
+      <text x="70" y="220" font-size="10.5" fill="var(--ink-2)">Raw per-query estimates — what the dashboard shows</text>
+      <path d="M70.0,288.0 L72.4,247.4 L77.1,258.7 L81.9,270.7 L86.6,283.3 L91.4,283.3 L96.1,283.0 L100.9,282.7 L105.6,282.7 L110.4,282.8 L115.1,282.6 L119.9,282.3 L124.6,282.1 L129.4,282.0 L134.1,281.9 L138.9,281.7 L143.6,281.3 L148.4,280.7 L153.1,280.2 L157.9,279.9 L162.6,280.0 L167.4,280.2 L172.1,280.4 L176.9,279.9 L181.6,278.9 L186.4,277.4 L191.1,276.5 L195.9,276.0 L200.6,276.1 L205.4,275.7 L210.1,275.3 L214.9,274.7 L219.6,274.6 L224.4,274.1 L229.1,273.7 L233.9,272.9 L238.6,272.7 L243.4,272.2 L248.1,272.0 L252.9,271.3 L257.6,271.0 L262.4,270.9 L267.1,271.3 L271.9,271.6 L276.6,271.6 L281.4,271.3 L286.1,271.2 L290.9,271.5 L295.6,271.6 L300.4,271.3 L305.1,270.4 L309.9,269.4 L314.6,268.0 L319.4,266.7 L324.1,265.3 L328.9,263.9 L333.6,256.6 L338.4,250.1 L343.1,244.2 L347.9,250.3 L352.6,255.6 L357.4,261.2 L362.1,261.4 L366.9,262.4 L371.6,263.0 L376.4,263.5 L381.1,263.7 L385.9,263.6 L390.6,263.6 L395.4,263.9 L400.1,264.3 L404.9,264.4 L409.6,264.1 L414.4,264.1 L419.1,264.2 L423.9,264.2 L428.6,264.0 L433.4,263.8 L438.1,264.0 L442.9,264.2 L447.6,264.7 L452.4,265.0 L457.1,265.8 L461.9,266.3 L466.6,266.8 L471.4,266.9 L476.1,267.3 L480.9,268.0 L485.6,268.8 L490.4,269.5 L495.1,270.1 L499.9,270.8 L504.6,271.6 L509.4,272.8 L514.1,273.7 L518.9,274.5 L523.6,274.7 L528.4,274.9 L533.1,275.2 L537.9,275.7 L542.6,276.1 L547.4,276.4 L552.1,276.7 L556.9,277.2 L561.6,277.5 L566.4,277.6 L571.1,277.8 L575.9,278.2 L580.6,278.6 L585.4,278.6 L590.1,278.8 L594.9,279.2 L599.6,279.4 L604.4,279.6 L609.1,279.8 L613.9,280.3 L618.6,280.5 L623.4,280.9 L628.1,261.3 L632.9,242.5 L637.6,224.0 L640.0,288.0 Z" fill="var(--ser2)" opacity="0.16" stroke="var(--ser2)" stroke-width="1.5"/>
+      <text x="620" y="240" font-size="10.5" fill="var(--ink-muted)" text-anchor="end">13% of estimates land beyond ±6pp (clipped)</text>
+
+      <line x1="70" y1="304" x2="640" y2="304" stroke="var(--baseline)" stroke-width="1"/>
+      <g font-size="10.5" fill="var(--ink-muted)" text-anchor="middle">
+        <text x="70" y="322">−6</text><text x="165" y="322">−4</text><text x="260" y="322">−2</text>
+        <text x="355" y="322">0</text><text x="450" y="322">+2</text><text x="545" y="322">+4</text><text x="640" y="322">+6pp</text>
+      </g>
+      <text x="355" y="338" font-size="10.5" fill="var(--ink-muted)" text-anchor="middle">net effect per query, percentage points of conversion</text>
+    </svg>
+  </div>
+  <figcaption><strong>Simulation.</strong> The sparsity problem in one picture: 8 weeks of a 50/50 user-level A/B over 2,000 allowlisted queries with Zipf traffic. Each curve is scaled to its own peak; the raw strip covers the 91% of queries with at least 30 sessions per arm. True effects (top) concentrate within roughly ±2.5pp. Raw per-query contrasts (bottom) smear across ±6pp and beyond — the median query simply has too few sessions for its own estimate to mean anything. Partial pooling (middle) recovers roughly the truth's shape by letting each query borrow strength from queries like it.</figcaption>
+</figure>
+
+<h3>Deciding what to remove — and what raw estimates do to you</h3>
+
+<p>Given posteriors, pruning is a probability statement, not a ranking: demote query <span class="m">q</span> when the posterior probability that its net effect is negative clears a threshold. The instinctive alternative — drop whatever has a negative point estimate, perhaps requiring statistical significance — is a machine for acting on noise. The bottom of a raw ranking is populated by the unlucky, not the bad, and a significance filter does not fix this: with sparse data, the estimates that clear a significance bar are disproportionately the extreme noise draws. This is the winner's curse, running in both directions at once.</p>
+
+<figure>
+  <div class="figbox">
+    <svg viewBox="0 0 680 252" role="img" aria-labelledby="fd-t fd-d">
+      <title id="fd-t">Decision quality: three pruning rules and two expansion rules</title>
+      <desc id="fd-d">Left panel: share of removed queries that were actually net-positive. Dropping any negative raw estimate removes 809 queries of which 66 percent were mistakes, destroying value. Adding a significance gate removes 58, still 51 percent mistakes. The empirical-Bayes posterior rule removes 164 with 11 percent mistakes and captures half the available pruning value. Right panel: 98 percent of feature-model-ranked additions are truly net-positive versus 48 percent of random additions.</desc>
+
+      <text x="70" y="28" font-size="10.5" fill="var(--ink-2)" font-weight="600">Pruning — share of removals that were mistakes</text>
+      <line x1="70" y1="38" x2="70" y2="228" stroke="var(--baseline)" stroke-width="1"/>
+
+      <text x="70" y="52" font-size="10.5" fill="var(--ink-2)">drop any negative raw estimate</text>
+      <path d="M70,58 h221.3 q4,0 4,4 v8 q0,4 -4,4 h-221.3 z" fill="var(--ser2)"/>
+      <text x="303" y="71" font-size="11" font-weight="600" fill="var(--ink)">66%</text>
+      <text x="70" y="88" font-size="10" fill="var(--ink-muted)">removes 809 of 2,000 · value −29 per 100k vs pruning nothing</text>
+
+      <text x="70" y="116" font-size="10.5" fill="var(--ink-2)">negative and significant (t ≤ −1.64)</text>
+      <path d="M70,122 h170.4 q4,0 4,4 v8 q0,4 -4,4 h-170.4 z" fill="var(--ser3)"/>
+      <text x="252" y="135" font-size="11" font-weight="600" fill="var(--ink)">51%</text>
+      <text x="70" y="152" font-size="10" fill="var(--ink-muted)">removes 58 · value +19</text>
+
+      <text x="70" y="180" font-size="10.5" fill="var(--ink-2)">posterior P(net &lt; 0) &gt; 0.8</text>
+      <path d="M70,186 h35.0 q4,0 4,4 v8 q0,4 -4,4 h-35.0 z" fill="var(--pos)"/>
+      <text x="117" y="199" font-size="11" font-weight="600" fill="var(--ink)">11%</text>
+      <text x="70" y="216" font-size="10" fill="var(--ink-muted)">removes 164 · value +40, of +81 achievable</text>
+
+      <line x1="398" y1="20" x2="398" y2="228" stroke="var(--rule)" stroke-width="1"/>
+
+      <text x="424" y="28" font-size="10.5" fill="var(--ink-2)" font-weight="600">Expansion — additions truly net-positive</text>
+      <line x1="424" y1="38" x2="424" y2="164" stroke="var(--baseline)" stroke-width="1"/>
+
+      <text x="424" y="52" font-size="10.5" fill="var(--ink-2)">300 ranked by the feature model</text>
+      <path d="M424,58 h162.3 q4,0 4,4 v8 q0,4 -4,4 h-162.3 z" fill="var(--pos)"/>
+      <text x="598" y="71" font-size="11" font-weight="600" fill="var(--ink)">98%</text>
+      <text x="424" y="88" font-size="10" fill="var(--ink-muted)">mean net effect +1.25pp</text>
+
+      <text x="424" y="116" font-size="10.5" fill="var(--ink-2)">300 at random</text>
+      <path d="M424,122 h78.2 q4,0 4,4 v8 q0,4 -4,4 h-78.2 z" fill="var(--ink-muted)" opacity="0.5"/>
+      <text x="514" y="135" font-size="11" font-weight="600" fill="var(--ink)">48%</text>
+      <text x="424" y="152" font-size="10" fill="var(--ink-muted)">mean net effect −0.03pp</text>
+
+      <text x="424" y="216" font-size="10" fill="var(--ink-muted)">candidates: 20,000 off-allowlist queries,</text>
+      <text x="424" y="230" font-size="10" fill="var(--ink-muted)">scored on features alone — no outcome data yet</text>
+    </svg>
+  </div>
+  <figcaption><strong>Simulation, medians over 40 replications.</strong> In this world 25% of allowlisted queries are truly net-negative, so there is real pruning to do — and the raw rule still destroys value doing it, because two thirds of what it removes was good. The posterior rule beat the significance-gated raw rule in 40 of 40 paired runs. On the right, the same feature model that powers the pooling doubles as the expansion ranker: its top-300 candidates are almost all genuinely positive, versus a coin flip for random additions.</figcaption>
+</figure>
+
+<h3>The loop, and its one asymmetry</h3>
+
+<p>Iterated, this becomes a simple operating rhythm: run the A/B, fit the pooled model, revise the allowlist — prune by posterior, add by model rank — and let the next cycle's data judge the revision. Additions are self-validating: a query added to the allowlist is routed for treatment users and not for control users, so the next cycle automatically produces the randomized contrast that tests it. <strong>Removals are not.</strong> A fully removed query gets identical treatment in both arms forever after, so the decision to remove it can never be revisited with data. The asymmetry has a cheap fix: demote to a <em>probation</em> tier that keeps a small share of routing rather than none — which is the allowlist-holdback principle from Part Six arriving by a different road. Two other practices keep the loop honest: make a small fraction of each cycle's additions random or near-random, so the next model is fitted on data less selected by the current model's opinions; and prefer expansion candidates near the support of what has been measured, since the model's confidence in query types it has never seen routed is confidence about its own extrapolation.</p>
+
+<p>Structurally, this is a contextual bandit run in batch: each allowlist revision is a policy update, the feature model is the reward surface, and the visitor-level A/B remains the audited readout — it measures the value difference between successive policies directly, in exactly Part Two's terms. The <span class="m">ε</span>-exploration design of Part Six is the same loop run continuously instead of in quarterly steps; the batch version trades learning speed for operational simplicity and inherits the same two invariants: keep a residual probability wherever future signal is wanted, and never let the model act far from its data. One caveat travels with the user-level design: treatment can change which queries a user goes on to issue, which contaminates per-query contrasts through composition; a first-exposure analysis — each user's initial allowlisted query — is the standard check on how much that matters. And the practical punchline: <strong>this loop requires no new serving infrastructure, and its first iteration can be fit on logs that exist today</strong> — the only strict prerequisite is the shadow allowlist flag in the control arm.</p>
+
+<hr>
+
+<h2><span class="num">Part nine</span>Open design questions</h2>
+
+<p>These are genuinely open, and each needs a decision before the first experiment. They are listed here rather than resolved because the choice depends on constraints outside this document.</p>
+
+<h3>What the nested design leaves open</h3>
+
+<p>The two-layer design in Part Six settles the biggest structural question — visitor-level randomization for measurement, query-level for learning — but three things inside it still need decisions. <em>Attribution:</em> the outcome is a session-level quantity while the treatment is per-query, so multi-search sessions need a rule for crediting the outcome to the queries inside them, and within-session spillovers mean the query layer's per-query effects are approximations even in the nested design. <em>Granularity:</em> whether the visitor layer is genuinely per-visitor or clustered coarser (per retailer, per market) for operational reasons, trading statistical power against consistency. <em>The explore-arm share:</em> how much of traffic enters the explore arm at all, which is a second budget dial alongside <span class="m">ε</span>.</p>
+
+<h3>The rest</h3>
+
+<ul>
+  <li><strong>What enters the uncertainty set,</strong> and how the boundary of "uncertain" is drawn — including whether obviously-bad candidates are excluded on judgment or allowed in at very low probability to test that judgment.</li>
+  <li><strong>The exploration budget,</strong> and how it is governed over time rather than approved once.</li>
+  <li><strong>Whether cost and latency enter as constraints or as prices.</strong> A single objective with an explicit price per unit of latency and per unit of compute is more tractable than a threshold, and it forces the tradeoff to be stated openly rather than buried in a cutoff nobody revisits.</li>
+  <li><strong>What triggers re-estimation.</strong> The permanent <span class="m">ε</span> floor supplies the data to detect staleness after an experience change; the open question is the statistic and threshold that trigger a refit or a rollback.</li>
+  <li><strong>Which guardrails halt exploration automatically,</strong> and at what thresholds — <span class="fill">specific guardrail metrics and thresholds</span>.</li>
+  <li><strong>How this interacts with retailer-level configuration,</strong> given that catalogs, traffic volumes, and tolerance for latency differ across customers — <span class="fill">whether routing policy is global, per-retailer, or pooled with per-retailer adjustment</span>.</li>
+</ul>
+
+<hr>
+
+<h2><span class="num">Part ten</span>Risks, and why they are bounded</h2>
+
+<table>
+  <thead>
+    <tr><th>Risk</th><th>Assessment</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Some shoppers see a worse experience</td>
+      <td>True, and it is the price of the information. It is bounded by a small routing probability, confined to the uncertainty set, immediately reversible, and small next to the cost of routing wrongly for as long as we decline to measure.</td>
+    </tr>
+    <tr>
+      <td>Cost overrun</td>
+      <td>Exploration spend is a dial set in advance with known unit costs and automatic guardrails. This is among the more predictable costs we carry.</td>
+    </tr>
+    <tr>
+      <td>Learning the wrong objective</td>
+      <td>Optimizing to short-horizon engagement can degrade retention. Mitigated by defining the north star at session or visitor level and holding longer-horizon guardrails — not eliminated, and worth explicit attention.</td>
+    </tr>
+    <tr>
+      <td>Latency degradation at higher routed volume</td>
+      <td>Serving cost and tail latency may not scale linearly. <span class="fill">capacity and tail-latency implications of the proposed exploration volume</span></td>
+    </tr>
+    <tr>
+      <td>Doing nothing</td>
+      <td>Not a neutral option. The status quo <em>is</em> a routing policy — an untested, restrictive one — whose error we currently cannot measure in either direction. Declining to explore is a decision to keep that error unknown.</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2><span class="num">In closing</span>What this changes</h2>
+
+<p>If the argument here is right, three things follow for how we work. Quality claims name their baseline, or they are treated as incomplete. Routing is understood as a standing estimation problem rather than a configuration file — a loop that can start in batch mode on the A/B we already run and graduate to continuous exploration — which means a permanent exploration budget rather than a one-off study. And autoraters are held to their measured correlation with real outcomes rather than adopted on faith.</p>
+
+<p>None of that requires a new model, a new metric platform, or a reorganization. It requires deciding that the most valuable thing we can buy right now is knowledge of what our own product does on the traffic we are not yet serving.</p>
+
+<footer>
+  <p><span class="fill">contact, internal doc links, revision history</span></p>
+</footer>
+
+</div>
+<script>
+  (function () {
+    var b = document.getElementById('t');
+    function cur() {
+      var s = document.documentElement.getAttribute('data-theme');
+      if (s) return s;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    function paint() { b.textContent = cur() === 'dark' ? 'Light' : 'Dark'; }
+    b.addEventListener('click', function () {
+      document.documentElement.setAttribute('data-theme', cur() === 'dark' ? 'light' : 'dark');
+      paint();
+    });
+    paint();
+  })();
+
+  (function () { // learning-curve tooltip
+    var box = document.getElementById('fig-lc');
+    if (!box) return;
+    var svg = box.querySelector('svg'), tip = document.getElementById('lc-tip');
+    var xl = document.getElementById('lc-x'), p1 = document.getElementById('lc-p1'), p2 = document.getElementById('lc-p2');
+    var hit = document.getElementById('lc-hit');
+    var XS = [70.0,151.4,232.9,314.3,395.7,477.1,558.6,640.0];
+    var BR = [188,237,263,279,283,284,286,285], NA = [131,140,142,146,146,148,148,148];
+    var Y1 = [156.2,119.0,99.1,86.8,83.9,83.0,81.5,81.8], Y2 = [199.8,193.3,191.6,188.7,188.1,187.1,186.9,186.5];
+    function show(evt) {
+      var pt = svg.createSVGPoint(); pt.x = evt.clientX; pt.y = evt.clientY;
+      var sp = pt.matrixTransform(svg.getScreenCTM().inverse());
+      var k = 0, best = 1e9;
+      for (var i = 0; i < 8; i++) { var d = Math.abs(XS[i] - sp.x); if (d < best) { best = d; k = i; } }
+      xl.setAttribute('x1', XS[k]); xl.setAttribute('x2', XS[k]); xl.setAttribute('opacity', '0.5');
+      p1.setAttribute('cx', XS[k]); p1.setAttribute('cy', Y1[k]); p1.setAttribute('opacity', '1');
+      p2.setAttribute('cx', XS[k]); p2.setAttribute('cy', Y2[k]); p2.setAttribute('opacity', '1');
+      tip.innerHTML = '<strong style="color:var(--ink)">Week ' + (k+1) + '</strong><br>broad: ' + BR[k] + ' &nbsp;·&nbsp; narrow: ' + NA[k] + '<br><span style="opacity:.75">per 100k sessions, median</span>';
+      tip.style.display = 'block';
+      var r = box.getBoundingClientRect(), sr = svg.getBoundingClientRect();
+      var px = sr.left - r.left + (XS[k] / 680) * sr.width;
+      tip.style.left = Math.min(px + 12, r.width - tip.offsetWidth - 8) + 'px';
+      tip.style.top = (sr.top - r.top + 30) + 'px';
+    }
+    function hide() { tip.style.display = 'none'; xl.setAttribute('opacity','0'); p1.setAttribute('opacity','0'); p2.setAttribute('opacity','0'); }
+    hit.addEventListener('mousemove', show);
+    hit.addEventListener('mouseleave', hide);
+  })();
+</script>
+</body>
+</html>

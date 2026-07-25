@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+posteriors*.csv
+dens.npy
+dens.json
+.DS_Store
