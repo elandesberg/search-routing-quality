@@ -8,9 +8,12 @@ This repository supports two different deliverables that must happen in order:
    produce reviewable, sanitized artifacts.
 2. **Human gate.** A product owner and an analytics owner approve the evidence,
    open decisions, publication scope, and proposed claims.
-3. **Phase B — document specialization.** Edit
-   [`docs/index.html`](docs/index.html) in the repository using only approved
-   Phase A evidence, then deliver the change through a pull request.
+3. **Phase B — document specialization and packaging.** Edit
+   [`docs/index.html`](docs/index.html) using only approved Phase A evidence,
+   build and validate
+   [`deliverables/search-routing-quality-handoff.docx`](deliverables/search-routing-quality-handoff.docx),
+   then deliver the source and DOCX through a pull request. The DOCX—not an
+   HTML/Markdown import—is the required Google Docs handoff.
 
 Do not start Phase B merely because a production number is available. The gate
 exists to decide whether the number answers the question the document asks.
@@ -40,7 +43,9 @@ The human owner must:
   than guessing;
 - identify the approved production analysis environment;
 - name the product, analytics, privacy/security, and publication approvers; and
-- decide where sensitive, non-committable outputs will live.
+- decide where sensitive, non-committable outputs will live; and
+- identify the approved Drive destination, audience, sharing policy, upload
+  owner, and Google Docs import-test owner.
 
 Before Phase A begins, replace every `NOT PROVIDED` value in the input manifest
 with evidence or an explicit `NOT AVAILABLE` plus owner:
@@ -93,9 +98,10 @@ count in `analysis/stage-2b-summary.md`.
 - Do not silently select a favorable date range, retailer, metric, or scenario.
 - Every production number records its numerator, denominator, unit, population,
   time window, extraction date, and evidence ID.
-- Every production-specific statement proposed for the HTML has an approved
-  evidence ID. Put that ID in a `data-evidence="E-###"` attribute on the nearest
-  enclosing HTML element; this is invisible in the rendered document.
+- Every production-specific statement proposed for the document has an
+  approved evidence ID. Put that ID in a `data-evidence="E-###"` attribute on
+  the nearest enclosing HTML element; it remains the source-side provenance
+  record and is intentionally absent from the reader-facing DOCX.
 - If production evidence contradicts a factual premise or directional claim,
   record the contradiction and propose accurate wording. Preserve the
   identification argument; do not preserve a disproven empirical assertion.
@@ -139,20 +145,22 @@ rg -q '^\| Gate status \| APPROVED FOR PHASE B \|$' UNRESOLVED.md
 ! rg -n 'NOT PROVIDED|NOT REVIEWED|NOT CREATED' UNRESOLVED.md
 ```
 
-## Phase B — specialize the HTML
+## Phase B — specialize the source and package the DOCX
 
 Edit the repository source at `docs/index.html`; do not scrape the published
-page and do not return a replacement HTML blob in chat. Keep the pull request
-draft until the checks below pass.
+page and do not return a replacement document blob in chat. After specialization,
+build the DOCX from that source. Never import the raw HTML or Markdown into
+Google Docs. Keep the pull request draft until the source, DOCX, privacy, and
+render checks below pass.
 
 Use this anchor checklist. A row may be marked `NOT AVAILABLE` only if the
 corresponding limitation is recorded in `UNRESOLVED.md` and the resulting prose
 remains accurate without invented detail.
 
 Create `analysis/specialization-checklist.md` with one row for every ID below.
-Its columns are `ID`, `Status`, `HTML anchor`, `Evidence IDs`, `Reviewer`, and
-`Notes`. Allowed statuses are `COMPLETE` and `NOT AVAILABLE`; the latter requires
-an `UNRESOLVED.md` ID in `Notes`.
+Its columns are `ID`, `Status`, `HTML source anchor`, `DOCX section`,
+`Evidence IDs`, `Reviewer`, and `Notes`. Allowed statuses are `COMPLETE` and
+`NOT AVAILABLE`; the latter requires an `UNRESOLVED.md` ID in `Notes`.
 
 | ID | Source anchor | Required specialization |
 |---|---|---|
@@ -237,6 +245,19 @@ assert len(index_rows) == len(set(index_rows)), "duplicate evidence-index ID"
 missing = sorted(html_ids - set(index_rows))
 assert not missing, f"HTML evidence IDs missing from index: {missing}"
 PY
+
+# Build the document-native team artifact. Do not import HTML/Markdown.
+python scripts/build_handoff_docx.py
+
+# Structural/privacy/accessibility gate.
+python scripts/check_handoff_docx.py \
+  deliverables/search-routing-quality-handoff.docx \
+  --require-complete
+
+# Render to PDF and page PNGs; rendered files are local QA artifacts.
+python scripts/render_handoff_docx.py \
+  deliverables/search-routing-quality-handoff.docx \
+  --output-dir build/docx-render
 ```
 
 Also verify programmatically or by review that:
@@ -249,8 +270,29 @@ Also verify programmatically or by review that:
   clear legend and explanation;
 - light and dark themes render at desktop and mobile widths;
 - figure labels and tables remain legible on mobile;
+- the DOCX opens successfully in LibreOffice or Word;
+- every rendered DOCX page has been reviewed at 100% for clipping, overflow,
+  broken equations, table wrapping, caption separation, unreadable figures,
+  blank-page artifacts, and header/footer consistency;
+- all five DOCX figures are inline embedded PNGs with useful alt text and their
+  captions remain attached;
+- headings, lists, and tables remain native editable structures;
+- no DOCX comments, tracked changes, hidden text, macros, embedded files,
+  linked media, external relationships, custom properties, or creator metadata
+  remain;
 - no sensitive or retailer-identifiable content appears in the diff; and
 - the pull-request body lists evidence used, unavailable facts, changed claims,
   tests run, and the human-gate approval.
 
-Move the draft pull request to ready-for-review only after these checks pass.
+Record the build hash, page count, structural check, visual reviewer, and any
+approved exceptions in `analysis/docx-qa.md`.
+
+Passing the local build and review makes the pull request **artifact-ready**.
+It does not authorize Drive upload. The document is **team-share-ready** only
+after an authorized person imports a copy into the approved restricted Drive
+location, checks Google Docs headings/navigation, all tables, all five figures
+and captions, equations, links, page breaks, final page, and access settings,
+then records the owner, date, destination, and result in `analysis/docx-qa.md`.
+
+Move the draft pull request to ready-for-review only after the artifact-ready
+checks pass. Do not upload or change Drive sharing without separate authority.

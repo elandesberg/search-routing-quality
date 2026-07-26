@@ -2,6 +2,7 @@ __pycache__/
 *.pyc
 .python-version.local
 .venv/
+.venv-docx/
 venv/
 .env
 .env.*
@@ -11,6 +12,7 @@ venv/
 .ruff_cache/
 .coverage
 htmlcov/
+build/
 
 # Production inputs may contain query text, identifiers, or internal metrics.
 data/

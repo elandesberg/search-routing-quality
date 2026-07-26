@@ -15,12 +15,36 @@ text, secrets, or temporary signed URLs here.
 | Approved analysis environment | NOT PROVIDED |
 | Production data access method | NOT PROVIDED |
 | Secure location for restricted outputs | NOT PROVIDED |
+| Required outputs | DOCX REQUIRED; HTML YES/NO NOT PROVIDED |
+| Required DOCX filename | search-routing-quality-handoff.docx (PROPOSED; NOT APPROVED) |
 | Internal document destination | NOT PROVIDED |
+| Approved Drive folder | NOT PROVIDED |
+| Allowed Drive audience/group | NOT PROVIDED |
+| Drive link-sharing setting | NOT PROVIDED |
+| Upload owner | NOT PROVIDED |
+| Google Docs import-test owner | NOT PROVIDED |
 | Destination access policy verified by | NOT PROVIDED |
 | Product approver | NOT PROVIDED |
 | Analytics approver | NOT PROVIDED |
 | Privacy/security approver | NOT PROVIDED |
 | Publication approver | NOT PROVIDED |
+
+## Document packaging
+
+| Field | Value |
+|---|---|
+| Approved page size | US Letter (PROPOSED; NOT APPROVED) |
+| Approved Word/brand template | NONE PROPOSED; NOT APPROVED |
+| Typography requirements | Arial document-native styles (PROPOSED; NOT APPROVED) |
+| Header/footer requirements | Search-routing header and page number (PROPOSED; NOT APPROVED) |
+| Table of contents required | NOT PROVIDED |
+| Accessibility requirements or approved exceptions | NOT PROVIDED |
+| Editable-equation policy | Unicode text for Google Docs portability (PROPOSED; NOT APPROVED) |
+| Figure rasterization and alt-text policy | Embedded PNG plus useful alt text (PROPOSED; NOT APPROVED) |
+| Comments or tracked changes permitted | NO (PROPOSED; NOT APPROVED) |
+| Metadata author/company policy | Creator and company scrubbed (PROPOSED; NOT APPROVED) |
+| Allowed internal-link domains | NOT PROVIDED |
+| Retention/classification label | NOT PROVIDED |
 
 ## Product and routing system
 
@@ -154,6 +178,7 @@ candidate set.
 | Review status for personal data/secrets | NOT REVIEWED |
 | Review status for retailer identifiability | NOT REVIEWED |
 | Approved use: verbatim or paraphrase | NOT DECIDED |
+| Approved output formats: DOCX, HTML, both, or neither | NOT DECIDED |
 | Approver and date | NOT PROVIDED |
 
 ## Source inventory
