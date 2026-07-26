@@ -1,4 +1,6 @@
-numpy>=1.24
-scipy>=1.10
-pymc>=5.10
-arviz>=0.17
+# Tested together on CPython 3.12.9. Keep this set exact unless the PyMC
+# synthetic check and focused test suite are rerun.
+numpy==2.3.5
+scipy==1.16.3
+pymc==5.28.5
+arviz==0.23.4

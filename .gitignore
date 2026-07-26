@@ -1,6 +1,29 @@
 __pycache__/
 *.pyc
+.python-version.local
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Production inputs may contain query text, identifiers, or internal metrics.
+data/
+logs.csv
+logs-*.csv
+logs_*.csv
+production-data/
+production_data/
+
+# Generated decision artifacts.
 posteriors*.csv
+candidate_posteriors*.csv
+*.stale-*.csv
 dens.npy
 dens.json
 .DS_Store

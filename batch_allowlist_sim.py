@@ -86,8 +86,11 @@ def run(seed):
         fhat = F @ beta
         # method of moments on well-measured queries:
         good = np.isfinite(v) & (v < 0.02**2)
-        resid2 = (raw[good]-fhat[good])**2 - v[good]
-        sig2 = max(np.average(resid2, weights=1/v[good]), 1e-7)
+        if np.any(good):
+            estimate = np.average((raw[good] - fhat[good])**2 - v[good],
+                                  weights=1 / v[good])
+            if np.isfinite(estimate):
+                sig2 = max(float(estimate), 1e-7)
     post_prec = 1/v + 1/sig2
     post = (raw/v + fhat/sig2)/post_prec
     post[~np.isfinite(v)] = fhat[~np.isfinite(v)]
