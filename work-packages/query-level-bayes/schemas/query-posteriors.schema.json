@@ -1,0 +1,488 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "query-posteriors.schema.json",
+  "title": "Shared query posterior summary",
+  "description": "One probability-scale query row from either estimator. Interval semantics remain explicit.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "run_id",
+    "query_id",
+    "estimator",
+    "interval_kind",
+    "token_count",
+    "query_length_log1p",
+    "query_length_z",
+    "n_control",
+    "y_control",
+    "n_treatment",
+    "y_treatment",
+    "raw_rate_control",
+    "raw_rate_treatment",
+    "raw_delta",
+    "p_control_mean",
+    "p_control_median",
+    "p_treatment_mean",
+    "p_treatment_median",
+    "delta_mean",
+    "delta_q025",
+    "delta_q10",
+    "delta_q25",
+    "delta_q50",
+    "delta_q75",
+    "delta_q90",
+    "delta_q975",
+    "p_delta_gt_0",
+    "tau_mean",
+    "tau_q025",
+    "tau_q10",
+    "tau_q25",
+    "tau_q50",
+    "tau_q75",
+    "tau_q90",
+    "tau_q975",
+    "p_tau_gt_0",
+    "cost_mode",
+    "cost_outcome_units",
+    "traffic_weight",
+    "expected_traffic_weighted_net_value",
+    "expected_regret_if_scored",
+    "prior_mean_control",
+    "prior_mean_treatment",
+    "prior_concentration_control",
+    "prior_concentration_treatment",
+    "shrinkage_weight_control",
+    "shrinkage_weight_treatment",
+    "posterior_sd_delta",
+    "mcse_delta_mean",
+    "mcse_p_delta_gt_0",
+    "support_status",
+    "overlap_status",
+    "convergence_status",
+    "predictive_status",
+    "diagnostic_status",
+    "decision_status",
+    "model_spec_version",
+    "shadow_policy_version",
+    "canonicalization_version",
+    "tokenizer_version",
+    "outcome_definition_version",
+    "analysis_window_id"
+  ],
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "query_id": {
+      "type": "string",
+      "oneOf": [
+        {
+          "pattern": "^q_[0-9]{4}$"
+        },
+        {
+          "pattern": "^q_[A-Za-z0-9_-]{16,128}$"
+        }
+      ]
+    },
+    "estimator": {
+      "enum": [
+        "empirical_bayes",
+        "full_bayes"
+      ]
+    },
+    "interval_kind": {
+      "enum": [
+        "plug_in_eb_interval",
+        "posterior_credible_interval"
+      ]
+    },
+    "token_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "query_length_log1p": {
+      "type": "number"
+    },
+    "query_length_z": {
+      "type": "number"
+    },
+    "n_control": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "y_control": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "n_treatment": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "y_treatment": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "raw_rate_control": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "raw_rate_treatment": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "raw_delta": {
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1
+    },
+    "p_control_mean": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "p_control_median": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "p_treatment_mean": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "p_treatment_median": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "delta_mean": {
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1
+    },
+    "delta_q025": {
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1
+    },
+    "delta_q10": {
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1
+    },
+    "delta_q25": {
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1
+    },
+    "delta_q50": {
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1
+    },
+    "delta_q75": {
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1
+    },
+    "delta_q90": {
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1
+    },
+    "delta_q975": {
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1
+    },
+    "p_delta_gt_0": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "tau_mean": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "tau_q025": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "tau_q10": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "tau_q25": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "tau_q50": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "tau_q75": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "tau_q90": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "tau_q975": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "p_tau_gt_0": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "cost_mode": {
+      "enum": [
+        "per_query",
+        "constant",
+        "not_configured"
+      ]
+    },
+    "cost_outcome_units": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "traffic_weight": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1
+    },
+    "expected_traffic_weighted_net_value": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "expected_regret_if_scored": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "prior_mean_control": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "prior_mean_treatment": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "prior_concentration_control": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "exclusiveMinimum": 0
+    },
+    "prior_concentration_treatment": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "exclusiveMinimum": 0
+    },
+    "shrinkage_weight_control": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "shrinkage_weight_treatment": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "posterior_sd_delta": {
+      "type": "number",
+      "minimum": 0
+    },
+    "mcse_delta_mean": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "mcse_p_delta_gt_0": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "support_status": {
+      "enum": [
+        "in_randomized_support",
+        "sensitivity_only",
+        "outside_support"
+      ]
+    },
+    "overlap_status": {
+      "type": "string",
+      "minLength": 1
+    },
+    "convergence_status": {
+      "type": "string",
+      "minLength": 1
+    },
+    "predictive_status": {
+      "type": "string",
+      "minLength": 1
+    },
+    "diagnostic_status": {
+      "type": "string",
+      "minLength": 1
+    },
+    "decision_status": {
+      "enum": [
+        "not_scored",
+        "scored_proposal"
+      ]
+    },
+    "model_spec_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "shadow_policy_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "canonicalization_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tokenizer_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "outcome_definition_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "analysis_window_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "x-csv-header": [
+    "run_id",
+    "query_id",
+    "estimator",
+    "interval_kind",
+    "token_count",
+    "query_length_log1p",
+    "query_length_z",
+    "n_control",
+    "y_control",
+    "n_treatment",
+    "y_treatment",
+    "raw_rate_control",
+    "raw_rate_treatment",
+    "raw_delta",
+    "p_control_mean",
+    "p_control_median",
+    "p_treatment_mean",
+    "p_treatment_median",
+    "delta_mean",
+    "delta_q025",
+    "delta_q10",
+    "delta_q25",
+    "delta_q50",
+    "delta_q75",
+    "delta_q90",
+    "delta_q975",
+    "p_delta_gt_0",
+    "tau_mean",
+    "tau_q025",
+    "tau_q10",
+    "tau_q25",
+    "tau_q50",
+    "tau_q75",
+    "tau_q90",
+    "tau_q975",
+    "p_tau_gt_0",
+    "cost_mode",
+    "cost_outcome_units",
+    "traffic_weight",
+    "expected_traffic_weighted_net_value",
+    "expected_regret_if_scored",
+    "prior_mean_control",
+    "prior_mean_treatment",
+    "prior_concentration_control",
+    "prior_concentration_treatment",
+    "shrinkage_weight_control",
+    "shrinkage_weight_treatment",
+    "posterior_sd_delta",
+    "mcse_delta_mean",
+    "mcse_p_delta_gt_0",
+    "support_status",
+    "overlap_status",
+    "convergence_status",
+    "predictive_status",
+    "diagnostic_status",
+    "decision_status",
+    "model_spec_version",
+    "shadow_policy_version",
+    "canonicalization_version",
+    "tokenizer_version",
+    "outcome_definition_version",
+    "analysis_window_id"
+  ],
+  "x-cross-field-constraints": [
+    "y_control <= n_control and y_treatment <= n_treatment",
+    "raw rates and raw_delta reproduce the observed counts",
+    "delta and tau quantiles are nondecreasing and 50% is inside 80% inside 95%",
+    "empirical_bayes uses plug_in_eb_interval",
+    "full_bayes uses posterior_credible_interval",
+    "cost_mode=not_configured implies all cost and tau fields are null",
+    "tau fields are all null when cost is not configured",
+    "expected_traffic_weighted_net_value equals traffic_weight * tau_mean when tau exists",
+    "expected_regret_if_scored is null when decision_status=not_scored",
+    "decision_status is not_scored unless an approved decision configuration was supplied"
+  ]
+}

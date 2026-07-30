@@ -1,0 +1,165 @@
+{
+  "schema_version": "1.0",
+  "run_mode": "synthetic",
+  "counts_file": "fixtures/synthetic-query-counts.csv",
+  "known_truth_file": "fixtures/synthetic-known-truth.csv",
+  "analysis_manifest_file": "fixtures/analysis-manifest.synthetic.json",
+  "aggregation_audit_file": "fixtures/aggregation-audit.synthetic.json",
+  "prerequisite_audit_file": "fixtures/prerequisite-audit.pass.json",
+  "output_directory": "build/synthetic-example",
+  "estimators": [
+    "empirical_bayes",
+    "full_bayes"
+  ],
+  "summary": {
+    "interval_levels": [
+      0.5,
+      0.8,
+      0.95
+    ],
+    "paired_effect_draws": 10000,
+    "seed": 1730
+  },
+  "cohort": {
+    "primary_population": "first_shadow_trigger_positive",
+    "required_shadow_value": 1,
+    "use_actual_delivery_for_selection": false,
+    "require_one_assignment_probability": true,
+    "require_one_primary_contribution_per_user": true
+  },
+  "outcome": {
+    "family": "binary",
+    "analysis_unit": "first_shadow_trigger_positive_randomized_user",
+    "maturity_rule": "synthetic_fixture_complete"
+  },
+  "query_length": {
+    "source_column": "token_count",
+    "transform": "standardized_log1p",
+    "tokenizer_version": "synthetic-tokenizer-v1",
+    "primary_basis": "linear",
+    "sensitivity_basis": {
+      "kind": "natural_spline",
+      "degree": 3,
+      "interior_knot_quantiles": [
+        0.25,
+        0.5,
+        0.75
+      ],
+      "approved_before_outcome_review": true
+    }
+  },
+  "cost": {
+    "source": "per_query_column",
+    "column": "cost_outcome_units",
+    "units": "synthetic_probability_points"
+  },
+  "empirical_bayes": {
+    "optimizer": "bounded_marginal_maximum_likelihood",
+    "multi_start_count": 8,
+    "bootstrap_unit": "synthetic_randomization_unit",
+    "hyperparameter_bootstrap_replicates": 200,
+    "seed": 1729
+  },
+  "full_bayes": {
+    "robust_sensitivity_student_df": 4.0,
+    "robust_sensitivity_approved": true,
+    "draws": 1000,
+    "tune": 1000,
+    "chains": 4,
+    "cores": 1,
+    "target_accept": 0.9,
+    "max_treedepth": 12,
+    "priors": {
+      "alpha_normal": {
+        "mean": -2.6,
+        "sd": 1.0
+      },
+      "beta_normal": {
+        "mean": 0.0,
+        "sd": 0.5
+      },
+      "gamma0_normal_sd": 0.5,
+      "gamma_tau_normal_sd": 0.35,
+      "sigma0_half_normal_scale": 0.75,
+      "sigma_tau_half_normal_scale": 0.35,
+      "lkj_eta": 2.0
+    },
+    "seed": 1729
+  },
+  "sensitivities": {
+    "student_df": [
+      3.0,
+      5.0,
+      10.0
+    ],
+    "query_length_basis": [
+      "linear_standardized_log1p",
+      "natural_spline_prespecified_knots"
+    ]
+  },
+  "synthetic_validation": {
+    "prior_predictive": {
+      "baseline_probability_range": [
+        0.001,
+        0.35
+      ],
+      "delta_range": [
+        -0.25,
+        0.25
+      ],
+      "minimum_fraction_within_ranges": 0.9,
+      "maximum_extreme_rate_fraction": 0.05
+    },
+    "posterior_predictive": {
+      "central_interval": 0.95,
+      "minimum_prespecified_statistics_covered": 0.8,
+      "statistics": [
+        "arm_total_successes",
+        "aggregate_delta",
+        "rate_by_length_band",
+        "rate_by_traffic_band",
+        "zero_or_all_success_cell_fraction"
+      ]
+    },
+    "calibration": {
+      "simulation_datasets": 20,
+      "minimum_effects_per_traffic_length_band": 200,
+      "coverage_levels": [
+        0.5,
+        0.8,
+        0.95
+      ],
+      "maximum_absolute_overall_coverage_error": 0.05,
+      "maximum_absolute_band_coverage_error": 0.1
+    },
+    "comparison": {
+      "maximum_material_sign_probability_difference": 0.1,
+      "maximum_material_delta_mean_difference": 0.01,
+      "aggregate_reconciliation_absolute_tolerance": 0.01
+    },
+    "scope": "synthetic_fixture_only_not_production_defaults"
+  },
+  "diagnostic_gates": {
+    "max_rhat_exclusive": 1.01,
+    "min_bulk_ess_exclusive": 400,
+    "min_tail_ess_exclusive": 400,
+    "max_divergences": 0
+  },
+  "decision_policy": {
+    "enabled": false,
+    "reason": "Synthetic fixture validation does not authorize routing actions.",
+    "loss_configuration": null,
+    "traffic_value_configuration": null,
+    "capacity_configuration": null,
+    "posterior_risk_configuration": null,
+    "tie_handling": null,
+    "probation_holdback_configuration": null,
+    "exploration_configuration": null,
+    "validity_period": null,
+    "owner_approval": null
+  },
+  "expected_truth": {
+    "traffic_weighted_delta_gross": 0.00452,
+    "traffic_weighted_tau_net": 0.00252
+  }
+}

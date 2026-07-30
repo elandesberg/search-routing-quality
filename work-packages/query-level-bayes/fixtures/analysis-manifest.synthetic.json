@@ -1,0 +1,70 @@
+{
+  "schema_version": "query_level_bayes.analysis_manifest.v1",
+  "data_classification": "synthetic",
+  "dataset_id": "d_synthetic_fixture",
+  "experiment_id": "x_synthetic_fixture",
+  "experiment_window": {
+    "start_utc": "2026-01-01T00:00:00Z",
+    "end_utc": "2026-01-08T00:00:00Z"
+  },
+  "randomization": {
+    "unit": "user",
+    "control_value": 0,
+    "treatment_value": 1,
+    "assignment_probability": 0.5,
+    "assignment_source_version": "synthetic-assignment-v1",
+    "assignment_is_immutable": true,
+    "one_probability_across_retained_cohort": true,
+    "health_check_approved": true,
+    "evidence_ref": "SYNTHETIC_FIXTURE"
+  },
+  "selection": {
+    "eligibility_version": "synthetic-eligibility-v1",
+    "primary_record_rule": "first_shadow_trigger_positive_query",
+    "deterministic_tie_break_version": "synthetic-tie-break-v1",
+    "first_shadow_trigger_positive_selection_verified": true,
+    "no_prior_experimental_exposure": true,
+    "evidence_ref": "SYNTHETIC_FIXTURE"
+  },
+  "shadow_trigger": {
+    "policy_version": "synthetic-shadow-aio-v1",
+    "artifact_sha256": "715eb24054813a3e55bd9e61a5895c45063c3c5d19874ba49d47bd0f7f2ac892",
+    "evaluated_in_both_arms": true,
+    "assignment_invariant": true,
+    "uses_only_pre_treatment_inputs": true,
+    "evidence_ref": "SYNTHETIC_FIXTURE"
+  },
+  "query_identity": {
+    "canonicalization_version": "synthetic-canonical-query-v1",
+    "opaque_id_version": "synthetic-query-id-v1",
+    "mapping_retained_outside_output": true,
+    "evidence_ref": "SYNTHETIC_FIXTURE"
+  },
+  "query_length": {
+    "definition": "token_count",
+    "tokenizer_version": "synthetic-tokenizer-v1",
+    "source_is_pre_treatment_canonical_query": true,
+    "transform": "standardized_log1p",
+    "evidence_ref": "SYNTHETIC_FIXTURE"
+  },
+  "outcome": {
+    "outcome_id": "synthetic-binary-outcome-v1",
+    "definition_version": "synthetic-outcome-definition-v1",
+    "attribution_window": "synthetic-complete-window",
+    "maturity_lag": "synthetic-none",
+    "binary": true,
+    "fully_mature": true,
+    "evidence_ref": "SYNTHETIC_FIXTURE"
+  },
+  "strata": {
+    "mode": "none",
+    "stratum_definition_version": null,
+    "handling_approved": true,
+    "evidence_ref": "SYNTHETIC_FIXTURE"
+  },
+  "input": {
+    "kind": "query_counts_v1",
+    "content_sha256": "a032242f1c667e0101f65adacd12ab0b2eeb92301d8302e63f94ebdb45633b9a",
+    "row_count": 12
+  }
+}

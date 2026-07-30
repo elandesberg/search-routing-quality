@@ -52,6 +52,9 @@ Never publish the production-specialized document to an unauthenticated URL.
 | [`scripts/render_handoff_docx.py`](scripts/render_handoff_docx.py) | LibreOffice/Poppler renderer for mandatory page-by-page visual QA |
 | [`analysis/docx-qa.md`](analysis/docx-qa.md) | Latest DOCX build hash, structural result, rendered-page review, and Google Docs import status |
 | [`production-replication-packet.md`](production-replication-packet.md) | Staged production-analysis methodology |
+| [`work-packages/query-level-bayes/`](work-packages/query-level-bayes/) | Self-contained implementation-agent handoff for comparable query-level empirical-Bayes and full-Bayes estimators |
+| [`deliverables/query-level-bayes-work-package.zip`](deliverables/query-level-bayes-work-package.zip) | Deterministic, independently verifiable ZIP of the query-level Bayesian-methods handoff |
+| [`scripts/build_query_level_bayes_work_package.py`](scripts/build_query_level_bayes_work_package.py) | Builds and verifies the handoff ZIP, internal manifest, paths, checksums, and extracted-package checks |
 | [`routing_sim.py`](routing_sim.py) | ε-exploration toy world behind Part Seven |
 | [`batch_allowlist_sim.py`](batch_allowlist_sim.py) | Batch A/B toy world behind Part Eight |
 | [`allowlist_model_pymc.py`](allowlist_model_pymc.py) | Sole candidate production estimator, with PyMC/NUTS diagnostics and a known-truth synthetic check |
@@ -122,6 +125,30 @@ decision. Derive production actions separately from an approved
 traffic/value/loss rule. Before a rerun, the scripts move any existing output to
 a recoverable `.stale-<UTC timestamp>` file so a failed run cannot leave an old
 result at the current output path.
+
+## Query-level Bayesian-methods handoff
+
+The separate [`work-packages/query-level-bayes/`](work-packages/query-level-bayes/)
+directory frames an implementation assignment for two query-level estimators:
+a baseball-style empirical-Bayes beta-binomial regression and a full
+hierarchical Bayesian model. Both estimate gross and cost-adjusted randomized
+effects within a versioned, assignment-invariant shadow-trigger population.
+Query length enters as a pre-treatment group-level predictor for pooling; it
+does not identify effects for queries outside experimental support.
+
+This is deliberately a work package rather than a Python distribution. Hand
+the committed ZIP to the implementation agent, or rebuild and verify it with:
+
+```bash
+python3 scripts/build_query_level_bayes_work_package.py
+python3 scripts/build_query_level_bayes_work_package.py --check
+```
+
+The package contains only synthetic opaque query IDs. Real event data,
+query-level posteriors, and allowlist decisions remain in the approved analysis
+environment. An assignment rule is not supplied by default: an authorized
+owner must approve the value, loss, cost, capacity, and posterior-risk policy
+before posterior summaries can become a static next-cycle proposal.
 
 ## Google Docs handoff
 
