@@ -1,0 +1,134 @@
+{
+  "schema_version": "1.0",
+  "run_mode": "production",
+  "production_execution_authorized": false,
+  "counts_file": null,
+  "known_truth_file": null,
+  "analysis_manifest_file": null,
+  "aggregation_audit_file": null,
+  "prerequisite_audit_file": null,
+  "approved_restricted_output_directory": null,
+  "estimators": [
+    "empirical_bayes",
+    "full_bayes"
+  ],
+  "summary": {
+    "interval_levels": [
+      0.5,
+      0.8,
+      0.95
+    ],
+    "paired_effect_draws": null,
+    "seed": null
+  },
+  "cohort": {
+    "primary_population": "first_shadow_trigger_positive",
+    "required_shadow_value": 1,
+    "use_actual_delivery_for_selection": false,
+    "require_one_assignment_probability": true,
+    "require_one_primary_contribution_per_user": true
+  },
+  "outcome": {
+    "family": null,
+    "definition": "NOT_PROVIDED",
+    "analysis_unit": "NOT_PROVIDED",
+    "maturity_rule": "NOT_PROVIDED",
+    "owner": "NOT_PROVIDED",
+    "evidence_id": "NOT_PROVIDED"
+  },
+  "query_length": {
+    "source_column": "token_count",
+    "transform": "standardized_log1p",
+    "tokenizer_version": "NOT_PROVIDED",
+    "canonicalization_version": "NOT_PROVIDED",
+    "primary_basis": "NOT_PROVIDED",
+    "sensitivity_basis": {
+      "kind": "NOT_PROVIDED",
+      "degree": null,
+      "interior_knot_quantiles": [],
+      "approved_before_outcome_review": false
+    },
+    "approved_before_outcome_review": false
+  },
+  "cost": {
+    "source": "NOT_PROVIDED",
+    "value": null,
+    "column": null,
+    "units": "NOT_PROVIDED",
+    "evidence_id": "NOT_PROVIDED"
+  },
+  "empirical_bayes": {
+    "optimizer": "NOT_PROVIDED",
+    "multi_start_count": null,
+    "bootstrap_unit": "NOT_PROVIDED",
+    "hyperparameter_bootstrap_replicates": null,
+    "seed": null
+  },
+  "full_bayes": {
+    "robust_sensitivity_student_df": 4.0,
+    "robust_sensitivity_approved": false,
+    "draws": null,
+    "tune": null,
+    "chains": null,
+    "cores": null,
+    "target_accept": null,
+    "max_treedepth": null,
+    "priors": {
+      "alpha_normal": {
+        "mean": null,
+        "sd": null
+      },
+      "beta_normal": {
+        "mean": null,
+        "sd": null
+      },
+      "gamma0_normal_sd": null,
+      "gamma_tau_normal_sd": null,
+      "sigma0_half_normal_scale": null,
+      "sigma_tau_half_normal_scale": null,
+      "lkj_eta": null
+    },
+    "seed": null
+  },
+  "sensitivities": {
+    "student_df": [],
+    "query_length_basis": [],
+    "decision_stability_criterion": "NOT_PROVIDED"
+  },
+  "validation": {
+    "prior_predictive_probability_ranges": null,
+    "prior_predictive_acceptance": null,
+    "posterior_predictive_statistics": [],
+    "posterior_predictive_acceptance": null,
+    "simulation_scenarios": [],
+    "simulation_count": null,
+    "coverage_tolerances": null,
+    "aggregate_reconciliation_tolerance": null,
+    "cross_method_disagreement_tolerances": null,
+    "approved_before_outcome_review": false
+  },
+  "diagnostic_gates": {
+    "max_rhat_exclusive": 1.01,
+    "min_bulk_ess_exclusive": 400,
+    "min_tail_ess_exclusive": 400,
+    "max_divergences": 0
+  },
+  "decision_policy": {
+    "enabled": false,
+    "loss_configuration": null,
+    "traffic_value_configuration": null,
+    "capacity_configuration": null,
+    "posterior_risk_configuration": null,
+    "tie_handling": null,
+    "probation_holdback_configuration": null,
+    "exploration_configuration": null,
+    "validity_period": null,
+    "owner_approval": null
+  },
+  "human_approvals": {
+    "analytics_owner": "NOT_PROVIDED",
+    "privacy_owner": "NOT_PROVIDED",
+    "product_owner": "NOT_PROVIDED",
+    "secure_run_authorizer": "NOT_PROVIDED"
+  }
+}

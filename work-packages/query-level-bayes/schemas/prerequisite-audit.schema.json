@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "prerequisite-audit.schema.json",
+  "title": "Query-level causal-analysis prerequisite audit",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "scope",
+    "analysis_population",
+    "outcome_family",
+    "checks"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "scope": {
+      "enum": [
+        "synthetic_fixture",
+        "production"
+      ]
+    },
+    "analysis_population": {
+      "const": "first_shadow_trigger_positive"
+    },
+    "outcome_family": {
+      "const": "binary"
+    },
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "randomization_integrity",
+        "stable_assignment",
+        "sample_ratio_review",
+        "shadow_trigger_in_both_arms",
+        "shadow_assignment_invariant",
+        "shadow_pre_treatment_inputs_only",
+        "policy_version_complete",
+        "first_shadow_trigger_positive_unique_per_unit",
+        "no_prior_experimental_exposure",
+        "constant_assignment_propensity_for_aggregate_counts",
+        "one_primary_contribution_per_user",
+        "actual_delivery_not_used_for_selection",
+        "outcome_mature_and_joined_once",
+        "binary_outcome_approved",
+        "opaque_id_and_feature_provenance_approved",
+        "strata_handling_approved",
+        "restricted_output_approved"
+      ],
+      "properties": {
+        "randomization_integrity": {
+          "$ref": "#/$defs/check"
+        },
+        "stable_assignment": {
+          "$ref": "#/$defs/check"
+        },
+        "sample_ratio_review": {
+          "$ref": "#/$defs/check"
+        },
+        "shadow_trigger_in_both_arms": {
+          "$ref": "#/$defs/check"
+        },
+        "shadow_assignment_invariant": {
+          "$ref": "#/$defs/check"
+        },
+        "shadow_pre_treatment_inputs_only": {
+          "$ref": "#/$defs/check"
+        },
+        "policy_version_complete": {
+          "$ref": "#/$defs/check"
+        },
+        "first_shadow_trigger_positive_unique_per_unit": {
+          "$ref": "#/$defs/check"
+        },
+        "no_prior_experimental_exposure": {
+          "$ref": "#/$defs/check"
+        },
+        "constant_assignment_propensity_for_aggregate_counts": {
+          "$ref": "#/$defs/check"
+        },
+        "one_primary_contribution_per_user": {
+          "$ref": "#/$defs/check"
+        },
+        "actual_delivery_not_used_for_selection": {
+          "$ref": "#/$defs/check"
+        },
+        "outcome_mature_and_joined_once": {
+          "$ref": "#/$defs/check"
+        },
+        "binary_outcome_approved": {
+          "$ref": "#/$defs/check"
+        },
+        "opaque_id_and_feature_provenance_approved": {
+          "$ref": "#/$defs/check"
+        },
+        "strata_handling_approved": {
+          "$ref": "#/$defs/check"
+        },
+        "restricted_output_approved": {
+          "$ref": "#/$defs/check"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "evidence_id",
+        "note"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "PASS",
+            "BLOCKED"
+          ]
+        },
+        "evidence_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "schema_version": "query_level_bayes.aggregation_audit.v1",
+  "scope": "synthetic_fixture",
+  "state": "PASS",
+  "source_rows": 12794,
+  "randomized_units": 12794,
+  "selected_primary_rows": 12794,
+  "shadow_trigger_positive_rows": 12794,
+  "mature_outcome_rows": 12794,
+  "retained_queries": 12,
+  "queries_excluded_missing_arm": 0,
+  "final_sums": {
+    "n_control": 6386,
+    "y_control": 267,
+    "n_treatment": 6408,
+    "y_treatment": 307
+  },
+  "actual_delivery_used_for_selection": false,
+  "evidence_ref": "SYNTHETIC_FIXTURE"
+}

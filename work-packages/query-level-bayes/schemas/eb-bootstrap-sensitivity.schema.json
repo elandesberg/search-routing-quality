@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eb-bootstrap-sensitivity.schema.json",
+  "title": "Empirical-Bayes hyperparameter-bootstrap sensitivity row",
+  "description": "Separate from the shared table so plug-in and bootstrap uncertainty cannot be confused.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "run_id",
+    "query_id",
+    "interval_kind",
+    "bootstrap_replicates_attempted",
+    "bootstrap_replicates_valid",
+    "delta_mean",
+    "delta_q025",
+    "delta_q10",
+    "delta_q25",
+    "delta_q50",
+    "delta_q75",
+    "delta_q90",
+    "delta_q975",
+    "p_delta_gt_0",
+    "tau_mean",
+    "tau_q025",
+    "tau_q10",
+    "tau_q25",
+    "tau_q50",
+    "tau_q75",
+    "tau_q90",
+    "tau_q975",
+    "p_tau_gt_0",
+    "diagnostic_status",
+    "model_spec_version"
+  ],
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "query_id": {
+      "type": "string",
+      "oneOf": [
+        {
+          "pattern": "^q_[0-9]{4}$"
+        },
+        {
+          "pattern": "^q_[A-Za-z0-9_-]{16,128}$"
+        }
+      ]
+    },
+    "interval_kind": {
+      "const": "eb_hyperparameter_sensitivity_interval"
+    },
+    "bootstrap_replicates_attempted": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "bootstrap_replicates_valid": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "delta_mean": {
+      "type": "number"
+    },
+    "delta_q025": {
+      "type": "number"
+    },
+    "delta_q10": {
+      "type": "number"
+    },
+    "delta_q25": {
+      "type": "number"
+    },
+    "delta_q50": {
+      "type": "number"
+    },
+    "delta_q75": {
+      "type": "number"
+    },
+    "delta_q90": {
+      "type": "number"
+    },
+    "delta_q975": {
+      "type": "number"
+    },
+    "p_delta_gt_0": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "tau_mean": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "tau_q025": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "tau_q10": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "tau_q25": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "tau_q50": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "tau_q75": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "tau_q90": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "tau_q975": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "p_tau_gt_0": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "diagnostic_status": {
+      "type": "string",
+      "minLength": 1
+    },
+    "model_spec_version": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "x-cross-field-constraints": [
+    "bootstrap_replicates_valid <= bootstrap_replicates_attempted",
+    "delta and tau quantiles are nondecreasing",
+    "failed replicates remain counted in bootstrap_replicates_attempted"
+  ]
+}

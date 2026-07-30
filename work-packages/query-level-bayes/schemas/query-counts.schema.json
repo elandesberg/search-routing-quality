@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "query-counts.schema.json",
+  "title": "Query-level randomized binary-outcome counts",
+  "description": "One row per opaque canonical query identifier in the approved earliest shadow-trigger-positive population.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "query_id",
+    "n_control",
+    "y_control",
+    "n_treatment",
+    "y_treatment",
+    "token_count",
+    "traffic_weight",
+    "cost_outcome_units"
+  ],
+  "properties": {
+    "query_id": {
+      "type": "string",
+      "description": "Opaque production ID, or visibly synthetic q_#### fixture ID.",
+      "oneOf": [
+        {
+          "pattern": "^q_[0-9]{4}$"
+        },
+        {
+          "pattern": "^q_[A-Za-z0-9_-]{16,128}$"
+        }
+      ]
+    },
+    "n_control": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "y_control": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "n_treatment": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "y_treatment": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "token_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "traffic_weight": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "cost_outcome_units": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    }
+  },
+  "x-csv-header": [
+    "query_id",
+    "n_control",
+    "y_control",
+    "n_treatment",
+    "y_treatment",
+    "token_count",
+    "traffic_weight",
+    "cost_outcome_units"
+  ],
+  "x-cross-field-constraints": [
+    "y_control <= n_control",
+    "y_treatment <= n_treatment",
+    "query_id is unique",
+    "traffic_weight sums to 1 across the file"
+  ]
+}

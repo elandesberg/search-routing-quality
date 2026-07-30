@@ -1,0 +1,93 @@
+{
+  "schema_version": "1.0",
+  "scope": "synthetic_fixture",
+  "analysis_population": "first_shadow_trigger_positive",
+  "outcome_family": "binary",
+  "checks": {
+    "randomization_integrity": {
+      "status": "PASS",
+      "evidence_id": "SYNTHETIC_FIXTURE",
+      "note": "Assignment is generated independently in the synthetic fixture."
+    },
+    "stable_assignment": {
+      "status": "PASS",
+      "evidence_id": "SYNTHETIC_FIXTURE",
+      "note": "Each synthetic randomized unit has one fixed assignment."
+    },
+    "sample_ratio_review": {
+      "status": "PASS",
+      "evidence_id": "SYNTHETIC_FIXTURE",
+      "note": "The fixture uses balanced control and treatment opportunities."
+    },
+    "shadow_trigger_in_both_arms": {
+      "status": "PASS",
+      "evidence_id": "SYNTHETIC_FIXTURE",
+      "note": "Eligibility is generated before assignment and shared across arms."
+    },
+    "shadow_assignment_invariant": {
+      "status": "PASS",
+      "evidence_id": "SYNTHETIC_FIXTURE",
+      "note": "The synthetic shadow trigger does not read assignment."
+    },
+    "shadow_pre_treatment_inputs_only": {
+      "status": "PASS",
+      "evidence_id": "SYNTHETIC_FIXTURE",
+      "note": "The synthetic shadow trigger uses only generated pre-treatment inputs."
+    },
+    "policy_version_complete": {
+      "status": "PASS",
+      "evidence_id": "SYNTHETIC_FIXTURE",
+      "note": "The fixture has one fixed synthetic policy version."
+    },
+    "first_shadow_trigger_positive_unique_per_unit": {
+      "status": "PASS",
+      "evidence_id": "SYNTHETIC_FIXTURE",
+      "note": "Only the earliest synthetic shadow-trigger-positive record contributes per unit."
+    },
+    "no_prior_experimental_exposure": {
+      "status": "PASS",
+      "evidence_id": "SYNTHETIC_FIXTURE",
+      "note": "Synthetic primary records occur before any experimental AIO exposure."
+    },
+    "constant_assignment_propensity_for_aggregate_counts": {
+      "status": "PASS",
+      "evidence_id": "SYNTHETIC_FIXTURE",
+      "note": "The synthetic cohort uses one assignment propensity."
+    },
+    "one_primary_contribution_per_user": {
+      "status": "PASS",
+      "evidence_id": "SYNTHETIC_FIXTURE",
+      "note": "Each synthetic user contributes one modeled outcome."
+    },
+    "actual_delivery_not_used_for_selection": {
+      "status": "PASS",
+      "evidence_id": "SYNTHETIC_FIXTURE",
+      "note": "Actual delivery is absent from synthetic cohort selection."
+    },
+    "outcome_mature_and_joined_once": {
+      "status": "PASS",
+      "evidence_id": "SYNTHETIC_FIXTURE",
+      "note": "All synthetic outcomes are mature and joined once."
+    },
+    "binary_outcome_approved": {
+      "status": "PASS",
+      "evidence_id": "SYNTHETIC_FIXTURE",
+      "note": "The generated outcome is Bernoulli by construction."
+    },
+    "opaque_id_and_feature_provenance_approved": {
+      "status": "PASS",
+      "evidence_id": "SYNTHETIC_FIXTURE",
+      "note": "IDs and token lengths are visibly synthetic and versioned."
+    },
+    "strata_handling_approved": {
+      "status": "PASS",
+      "evidence_id": "SYNTHETIC_FIXTURE",
+      "note": "The fixture contains one declared synthetic stratum."
+    },
+    "restricted_output_approved": {
+      "status": "PASS",
+      "evidence_id": "SYNTHETIC_FIXTURE",
+      "note": "The synthetic example may write only to its ignored build directory."
+    }
+  }
+}
